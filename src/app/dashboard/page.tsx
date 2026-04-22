@@ -70,6 +70,16 @@ export default function DashboardPage() {
       >
         Test get links
       </button>
+
+      <button
+        onClick={async () => {
+          const res = await fetch("/api/links");
+          const data = await res.json();
+          console.log(data);
+        }}
+      >
+        Check links
+      </button>
     </div>
   );
 }
