@@ -5,7 +5,13 @@ import { createLink, getLinksByUserId } from "../../../../lib/queries";
 import { generateShortCode } from "../../../../lib/nanoid";
 
 const createLinkSchema = z.object({
-  originalUrl: z.string().url({ message: "Please enter a valid URL" }),
+  originalUrl: z
+    .string()
+    .url({ message: "Please enter a valid URL" })
+    .refine(
+      (url) => url.startsWith("http://") || url.startsWith("https://"),
+      { message: "Only http and https URLs are allowed" }
+    ),
 });
 
 export async function GET() {
@@ -14,8 +20,16 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const userLinks = await getLinksByUserId(session.user.id);
-  return NextResponse.json({ links: userLinks });
+  try {
+    const userLinks = await getLinksByUserId(session.user.id);
+    return NextResponse.json({ links: userLinks });
+  } catch (error) {
+    console.error("Failed to fetch links:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch links" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(req: Request) {
@@ -36,11 +50,19 @@ export async function POST(req: Request) {
 
   const shortCode = generateShortCode();
 
-  const link = await createLink({
-    userId: session.user.id,
-    originalUrl: parsed.data.originalUrl,
-    shortCode,
-  });
+  try {
+    const link = await createLink({
+      userId: session.user.id,
+      originalUrl: parsed.data.originalUrl,
+      shortCode,
+    });
 
-  return NextResponse.json({ link }, { status: 201 });
+    return NextResponse.json({ link }, { status: 201 });
+  } catch (error) {
+    console.error("Failed to create link:", error);
+    return NextResponse.json(
+      { error: "Failed to create link" },
+      { status: 500 }
+    );
+  }
 }

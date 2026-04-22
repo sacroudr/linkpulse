@@ -1,12 +1,21 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, count } from "drizzle-orm";
 import { db } from "./db";
 import { links, clicks } from "./schema";
 
 export async function getLinksByUserId(userId: string) {
   return db
-    .select()
+    .select({
+      id: links.id,
+      originalUrl: links.originalUrl,
+      shortCode: links.shortCode,
+      createdAt: links.createdAt,
+      userId: links.userId,
+      clickCount: count(clicks.id),
+    })
     .from(links)
+    .leftJoin(clicks, eq(clicks.linkId, links.id))
     .where(eq(links.userId, userId))
+    .groupBy(links.id)
     .orderBy(desc(links.createdAt));
 }
 
@@ -44,14 +53,23 @@ export async function createLink(data: {
 }
 
 export async function deleteLinkById(id: string) {
-  await db.delete(links).where(eq(links.id, id));
+  const [deleted] = await db
+    .delete(links)
+    .where(eq(links.id, id))
+    .returning();
+
+  return deleted ?? null;
 }
 
 export async function logClick(data: {
   linkId: string;
   userAgent: string | null;
 }) {
-  await db.insert(clicks).values(data);
+  try {
+    await db.insert(clicks).values(data);
+  } catch (error) {
+    console.error("Failed to log click:", error);
+  }
 }
 
 export async function getClicksByLinkId(linkId: string) {

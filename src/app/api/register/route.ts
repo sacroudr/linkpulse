@@ -10,13 +10,14 @@ const registerSchema = z.object({
   password: z.string().min(6),
 });
 
+// TODO: add rate limiting before production (e.g. upstash/ratelimit)
 export async function POST(req: Request) {
   const body = await req.json();
   const parsed = registerSchema.safeParse(body);
 
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Invalid input" },
+      { error: parsed.error.errors[0].message },
       { status: 400 }
     );
   }
@@ -38,10 +39,18 @@ export async function POST(req: Request) {
 
   const hashed = await bcrypt.hash(password, 12);
 
-  const [user] = await db
-    .insert(users)
-    .values({ email, password: hashed })
-    .returning({ id: users.id, email: users.email });
+  try {
+    const [user] = await db
+      .insert(users)
+      .values({ email, password: hashed })
+      .returning({ id: users.id, email: users.email });
 
-  return NextResponse.json({ user }, { status: 201 });
+    return NextResponse.json({ user }, { status: 201 });
+  } catch (error) {
+    console.error("Registration error:", error);
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 }
+    );
+  }
 }

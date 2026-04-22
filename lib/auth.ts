@@ -12,6 +12,7 @@ const loginSchema = z.object({
 });
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  session: { strategy: "jwt" },
   providers: [
     Credentials({
       async authorize(credentials) {
@@ -26,10 +27,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           .where(eq(users.email, email))
           .limit(1);
 
-        if (!user) return null;
+        const passwordMatch = await bcrypt.compare(
+          password,
+          user?.password ?? "$2b$12$invalidhashfortimingprevention"
+        );
 
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (!passwordMatch) return null;
+        if (!user || !passwordMatch) return null;
 
         return { id: user.id, email: user.email };
       },
@@ -37,7 +40,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user?.id) token.id = user.id;
       return token;
     },
     session({ session, token }) {
