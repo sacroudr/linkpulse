@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Logo } from "../../../../components/ui/Logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -32,41 +33,117 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm bg-white rounded-xl border border-gray-200 p-8">
-        <h1 className="text-xl font-medium mb-6">Sign in</h1>
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4"
+      style={{
+        backgroundColor: "var(--bg)",
+        backgroundImage: `radial-gradient(circle, var(--border) 1px, transparent 1px)`,
+        backgroundSize: "24px 24px",
+      }}
+    >
+      {/* Logo */}
+      <div className="mb-8">
+        <Logo />
+      </div>
+
+      {/* Card */}
+      <div
+        className="w-full max-w-md rounded-2xl p-8"
+        style={{
+          backgroundColor: "var(--surface)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        {/* Heading */}
+        <h1 className="text-2xl font-bold text-white mb-1">Welcome back</h1>
+        <p className="text-sm mb-6" style={{ color: "#71717a" }}>
+          Sign in to your Linkpulse account.
+        </p>
+
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm text-gray-600 mb-1">Email</label>
+          {/* Email */}
+          <div className="space-y-1.5">
+            <label
+              className="block text-xs font-semibold tracking-widest uppercase"
+              style={{ color: "#71717a" }}
+            >
+              Email address
+            </label>
             <input
               name="email"
               type="email"
+              placeholder="alex@example.com"
               required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
+              className="w-full rounded-lg px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors"
+              style={{
+                backgroundColor: "var(--bg)",
+                border: "1px solid var(--border)",
+                color: "var(--text-primary)",
+              }}
+              onFocus={(e) =>
+                (e.currentTarget.style.borderColor = "#3b82f6")
+              }
+              onBlur={(e) =>
+                (e.currentTarget.style.borderColor = "#27272a")
+              }
             />
           </div>
-          <div>
-            <label className="block text-sm text-gray-600 mb-1">Password</label>
+
+          {/* Password */}
+          <div className="space-y-1.5">
+            <label
+              className="block text-xs font-semibold tracking-widest uppercase"
+              style={{ color: "#71717a" }}
+            >
+              Password
+            </label>
             <input
               name="password"
               type="password"
+              placeholder="••••••••"
               required
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-gray-400"
+              className="w-full rounded-lg px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors"
+              style={{
+                backgroundColor: "var(--bg)",
+                border: "1px solid var(--border)",
+                color: "var(--text-primary)",
+              }}
+              onFocus={(e) =>
+                (e.currentTarget.style.borderColor = "#3b82f6")
+              }
+              onBlur={(e) =>
+                (e.currentTarget.style.borderColor = "#27272a")
+              }
             />
           </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+
+          {/* Error */}
+          {error && (
+            <p className="text-sm" style={{ color: "#ef4444" }}>
+              {error}
+            </p>
+          )}
+
+          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gray-900 text-white rounded-lg py-2 text-sm font-medium hover:bg-gray-700 transition-colors disabled:opacity-50"
+            className="w-full py-3 rounded-full text-sm font-semibold text-white transition-opacity disabled:opacity-50 cursor-pointer"
+            style={{ backgroundColor: "var(--accent)" }}
           >
             {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>
-        <p className="text-sm text-gray-500 mt-4 text-center">
+
+        {/* Footer */}
+        <p className="text-sm text-center mt-6" style={{ color: "#71717a" }}>
           No account?{" "}
-          <a href="/register" className="text-gray-900 underline">
-            Register
+          <a
+            href="/register"
+            className="font-medium"
+            style={{ color: "#3b82f6" }}
+          >
+            Create one free
           </a>
         </p>
       </div>
