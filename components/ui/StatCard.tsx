@@ -15,17 +15,24 @@ export function StatCard({ label, value, description, mono }: StatCardProps) {
       }}
     >
       <p
-        className="text-xs font-semibold tracking-widest uppercase mb-3"
-        style={{ color: "var(--text-subtle)" }}
+        style={{
+          fontSize: "var(--text-xs)",
+          color: "var(--text-subtle)",
+        }}
+        className="font-semibold tracking-widest uppercase mb-3"
       >
         {label}
       </p>
-      <p className={`text-4xl font-bold mb-1 ${mono ? "font-mono" : ""}`}
-        style={{ color: "var(--text-primary)" }}
+      <p
+        className={`font-bold mb-1 ${mono ? "font-mono" : ""}`}
+        style={{
+          fontSize: "var(--text-4xl)",
+          color: "var(--text-primary)",
+        }}
       >
         {value}
       </p>
-      <p className="text-sm" style={{ color: "var(--text-subtle)" }}>
+      <p style={{ fontSize: "var(--text-sm)", color: "var(--text-subtle)" }}>
         {description}
       </p>
     </div>

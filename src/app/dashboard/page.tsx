@@ -26,8 +26,13 @@ export default async function DashboardPage() {
     <div className="max-w-6xl">
       {/* Page header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold " style={{ color: "var(--text-primary)" }}>Dashboard</h1>
-        <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
+        <h1
+          className="font-bold"
+          style={{ fontSize: "var(--text-3xl)", color: "var(--text-primary)" }}
+        >
+          Dashboard
+        </h1>
+        <p style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}>
           Manage and track all your short links.
         </p>
       </div>
@@ -64,7 +69,8 @@ export default async function DashboardPage() {
             style={{
               backgroundColor: "#1c1c1f",
               color: "#71717a",
-              border: "1px solid #27272a",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius)",
             }}
           >
             {links.length}

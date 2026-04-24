@@ -47,14 +47,19 @@ export function CreateLinkForm() {
         <div
           className="flex items-center flex-1 rounded-lg overflow-hidden"
           style={{
+            fontSize: "var(--text-sm)",
+            color: "var(--text-primary)",
             backgroundColor: "var(--bg)",
             border: "1px solid var(--border)",
+             borderRadius: "var(--radius)",
+  overflow: "hidden",
           }}
         >
           {/* Prefix */}
           <span
             className="px-3 py-3 text-sm font-mono border-r flex-shrink-0"
             style={{
+              fontSize: "var(--text-sm)",
               color: "var(--text-subtle)",
               borderColor: "var(--border)",
               backgroundColor: "var(--bg)",
@@ -70,7 +75,7 @@ export function CreateLinkForm() {
             placeholder="https://your-long-url.com/goes/here"
             required
             className="flex-1 px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none bg-transparent"
-            style={{ color: "var(--text-primary)" }}
+            style={{fontSize: "var(--text-sm)", color: "var(--text-primary)" }}
           />
         </div>
 
@@ -79,7 +84,7 @@ export function CreateLinkForm() {
           type="submit"
           disabled={loading}
           className="flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold text-white transition-opacity disabled:opacity-50 flex-shrink-0 cursor-pointer"
-          style={{ backgroundColor: "var(--accent)" }}
+          style={{ fontSize: "var(--text-sm)", backgroundColor: "var(--accent)" , borderRadius: "var(--radius)"}}
         >
           <Zap className="w-4 h-4 fill-white" />
           {loading ? "Shortening..." : "Shorten"}

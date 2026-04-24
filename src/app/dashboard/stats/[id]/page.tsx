@@ -114,7 +114,7 @@ export default async function StatsPage({
             <div className="flex items-center gap-2">
               <span
                 className="text-2xl font-bold font-mono"
-                style={{ color: "#3b82f6" }}
+                style={{ color: "var(--accent)" }}
               >
                 {shortUrl}
               </span>

@@ -23,7 +23,8 @@ export function CopyButton({ text }: CopyButtonProps) {
       style={{
         backgroundColor: "#1c1c1f",
         border: "1px solid #27272a",
-        color: copied ? "#22c55e" : "#71717a",
+        color: copied ? "#22c55e" : "var(--text-subtle)",
+        borderRadius: "var(--radius)",
       }}
       title="Copy link"
     >

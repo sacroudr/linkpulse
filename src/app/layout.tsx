@@ -41,7 +41,7 @@ const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-pl
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
 
 export const metadata = {
-  title: "Shorly",
+  title: "LinkPulse",
   description: "Simple, fast URL shortener",
 };
 

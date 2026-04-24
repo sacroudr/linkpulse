@@ -50,10 +50,12 @@ export default function RegisterPage() {
   const inputStyle = {
     backgroundColor: "#1c1c1f",
     border: "1px solid #27272a",
+    borderRadius: "var(--radius)",
+    overflow: "hidden",
   };
 
   function handleFocus(e: React.FocusEvent<HTMLInputElement>) {
-    e.currentTarget.style.borderColor = "#3b82f6";
+    e.currentTarget.style.borderColor = "currentTarget.style.borderColor";
   }
 
   function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
@@ -168,7 +170,7 @@ export default function RegisterPage() {
             type="submit"
             disabled={loading}
             className="w-full py-3 rounded-full text-sm font-semibold text-white transition-opacity disabled:opacity-50 cursor-pointer"
-            style={{ backgroundColor: "#3b82f6" }}
+            style={{ backgroundColor: "var(--accent)" }}
           >
             {loading ? "Creating account..." : "Create account"}
           </button>
@@ -180,7 +182,7 @@ export default function RegisterPage() {
           <a
             href="/login"
             className="font-medium"
-            style={{ color: "#3b82f6" }}
+            style={{ color: "var(--accent)" }}
           >
             Sign in
           </a>

@@ -77,8 +77,8 @@ export function ClicksChart({ data }: ClicksChartProps) {
       >
         <defs>
           <linearGradient id="clicksGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+            <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid
@@ -103,11 +103,11 @@ export function ClicksChart({ data }: ClicksChartProps) {
         <Area
           type="monotone"
           dataKey="count"
-          stroke="#3b82f6"
+          stroke="var(--accent)"
           strokeWidth={2}
           fill="url(#clicksGradient)"
-          dot={<Dot r={3} fill="#3b82f6" stroke="#3b82f6" />}
-          activeDot={{ r: 5, fill: "#3b82f6", stroke: "#09090b" }}
+          dot={<Dot r={3} fill="var(--accent)" stroke="var(--accent)" />}
+          activeDot={{ r: 5, fill: "var(--accent)", stroke: "var(--bg)" }}
         />
       </AreaChart>
     </ResponsiveContainer>

@@ -12,15 +12,28 @@
   --base-font-size: 14px;
   --density-padding: 10px 16px;
   --font-ui: var(--font-inter), sans-serif;
+
+  --text-xs: calc(var(--base-font-size) * 0.75);
+  --text-sm: calc(var(--base-font-size) * 0.875);
+  --text-base: var(--base-font-size);
+  --text-lg: calc(var(--base-font-size) * 1.125);
+  --text-xl: calc(var(--base-font-size) * 1.25);
+  --text-2xl: calc(var(--base-font-size) * 1.5);
+  --text-3xl: calc(var(--base-font-size) * 1.875);
+  --text-4xl: calc(var(--base-font-size) * 2.25);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  font-size: var(--base-font-size);
+}
+
 body {
   font-family: var(--font-ui);
-  font-size: var(--base-font-size);
+  font-size: 1rem;
   background-color: var(--bg);
   color: var(--text-primary);
 }

@@ -24,7 +24,7 @@ export default function AnalyticsPage() {
           className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
           style={{ backgroundColor: "#1c1c1f" }}
         >
-          <TrendingUp className="w-5 h-5" style={{ color: "#3b82f6" }} />
+          <TrendingUp className="w-5 h-5" style={{ color: "var(--accent)" }} />
         </div>
         <p className="text-white font-medium mb-1">No link selected</p>
         <p className="text-sm mb-6" style={{ color: "#52525b" }}>
@@ -36,7 +36,8 @@ export default function AnalyticsPage() {
           style={{
             backgroundColor: "#1c1c1f",
             border: "1px solid #27272a",
-            color: "#3b82f6",
+            color: "var(--accent)",
+            borderRadius: "var(--radius)",
           }}
         >
           Go to dashboard

@@ -4,11 +4,13 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Logo } from "../../../../components/ui/Logo";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,7 +57,7 @@ export default function LoginPage() {
         }}
       >
         {/* Heading */}
-        <h1 className="text-2xl font-bold text-white mb-1">Welcome back</h1>
+        <h1 className="font-bold  mb-1" style={{ fontSize: "var(--text-2xl)", color: "var(--text-primary)" }}>Welcome back</h1>
         <p className="text-sm mb-6" style={{ color: "#71717a" }}>
           Sign in to your Linkpulse account.
         </p>
@@ -64,8 +66,8 @@ export default function LoginPage() {
           {/* Email */}
           <div className="space-y-1.5">
             <label
-              className="block text-xs font-semibold tracking-widest uppercase"
-              style={{ color: "#71717a" }}
+              className="block font-semibold tracking-widest uppercase"
+              style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}
             >
               Email address
             </label>
@@ -76,12 +78,14 @@ export default function LoginPage() {
               required
               className="w-full rounded-lg px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors"
               style={{
+                fontSize: "var(--text-sm)" ,
                 backgroundColor: "var(--bg)",
                 border: "1px solid var(--border)",
                 color: "var(--text-primary)",
+                borderRadius: "var(--radius)",
               }}
               onFocus={(e) =>
-                (e.currentTarget.style.borderColor = "#3b82f6")
+                (e.currentTarget.style.borderColor = "var(--accent)")
               }
               onBlur={(e) =>
                 (e.currentTarget.style.borderColor = "#27272a")
@@ -92,29 +96,46 @@ export default function LoginPage() {
           {/* Password */}
           <div className="space-y-1.5">
             <label
-              className="block text-xs font-semibold tracking-widest uppercase"
-              style={{ color: "#71717a" }}
+              className="block font-semibold tracking-widest uppercase"
+              style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}
             >
               Password
             </label>
+            <div className="relative">
             <input
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               required
               className="w-full rounded-lg px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors"
               style={{
+                fontSize: "var(--text-sm)" ,
                 backgroundColor: "var(--bg)",
                 border: "1px solid var(--border)",
                 color: "var(--text-primary)",
+                borderRadius: "var(--radius)",
+                paddingRight: "2.5rem",
               }}
               onFocus={(e) =>
-                (e.currentTarget.style.borderColor = "#3b82f6")
+                (e.currentTarget.style.borderColor = "var(--accent)")
               }
               onBlur={(e) =>
                 (e.currentTarget.style.borderColor = "#27272a")
               }
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+              style={{ color: "#71717a" }}
+            >
+              {showPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </button>
+            </div>
           </div>
 
           {/* Error */}
@@ -128,9 +149,10 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-full text-sm font-semibold text-white transition-opacity disabled:opacity-50 cursor-pointer"
-            style={{ backgroundColor: "var(--accent)" }}
+            className="w-full py-3 rounded-full text-sm font-semibold text-white transition-opacity disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+            style={{fontSize: "var(--text-sm)" , backgroundColor: "var(--accent)" }}
           >
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>
@@ -141,7 +163,7 @@ export default function LoginPage() {
           <a
             href="/register"
             className="font-medium"
-            style={{ color: "#3b82f6" }}
+            style={{ color: "var(--accent)" }}
           >
             Create one free
           </a>

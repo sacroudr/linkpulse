@@ -71,13 +71,14 @@ export function LinkTable({ links }: LinkTableProps) {
       className="rounded-xl overflow-hidden"
       style={{
         backgroundColor: "var(--surface)",
-          border: "1px solid var(--border)",
+        border: "1px solid var(--border)",
       }}
     >
       {/* Table header */}
       <div
         className="grid text-xs font-semibold tracking-widest uppercase px-6 py-3"
         style={{
+          fontSize: "var(--text-xs)",
           color: "var(--text-subtle)",
           borderBottom: "1px solid var(--border)",
           gridTemplateColumns: "200px 1fr 100px 130px 120px",
@@ -103,7 +104,7 @@ export function LinkTable({ links }: LinkTableProps) {
           {/* Short code */}
           <span
             className="text-sm font-mono font-medium"
-            style={{ color: "var(--accent)" }}
+            style={{ fontSize: "var(--text-sm)", color: "var(--accent)" }}
           >
             /{link.shortCode}
           </span>
@@ -111,7 +112,7 @@ export function LinkTable({ links }: LinkTableProps) {
           {/* Original URL */}
           <span
             className="text-sm truncate pr-4"
-            style={{ color: "var(--text-muted)" }}
+            style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}
           >
             {link.originalUrl}
           </span>
@@ -121,9 +122,11 @@ export function LinkTable({ links }: LinkTableProps) {
             <span
               className="text-xs font-medium px-2.5 py-1 rounded-md"
               style={{
+                fontSize: "var(--text-xs)",
                 backgroundColor: "var(--bg)",
                 color: "var(--text-muted)",
                 border: "1px solid var(--border)",
+                borderRadius: "var(--radius)",
               }}
             >
               {formatCount(link.clickCount)}
@@ -131,7 +134,7 @@ export function LinkTable({ links }: LinkTableProps) {
           </span>
 
           {/* Created date */}
-          <span className="text-sm" style={{ color: "var(--text-subtle)" }}>
+          <span className="text-sm" style={{ fontSize: "var(--text-sm)", color: "var(--text-subtle)" }}>
             {formatDate(link.createdAt)}
           </span>
 
@@ -140,6 +143,7 @@ export function LinkTable({ links }: LinkTableProps) {
             <button
               onClick={() => router.push(`/dashboard/stats/${link.id}`)}
               className="p-1.5 rounded-md transition-colors cursor-pointer"
+              
               style={{ color: "var(--text-subtle)" }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "var(--border)")
