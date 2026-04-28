@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Logo } from "../../../../components/ui/Logo";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -166,13 +167,13 @@ export default function LoginPage() {
           style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}
         >
           No account?{" "}
-          <a
+          <Link
             href="/register"
             className="font-medium"
             style={{ color: "var(--accent)" }}
           >
             Create one free
-          </a>
+          </Link>
         </p>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ExternalLink, Share2, ChevronRight } from "lucide-react";
+import { ExternalLink, Share2, ChevronRight } from "lucide-react";
 import { auth } from "../../../../../lib/auth";
 import { getClicksByLinkId, getLinkById } from "../../../../../lib/queries";
 import { StatCard } from "../../../../../components/ui/StatCard";
