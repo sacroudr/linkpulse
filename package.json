@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "npm run db:migrate && next build",
+    "build:ci": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "nextlint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio"
