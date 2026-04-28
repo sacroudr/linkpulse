@@ -15,27 +15,65 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
   providers: [
     Credentials({
+      // async authorize(credentials) {
+      //   const parsed = loginSchema.safeParse(credentials);
+      //   if (!parsed.success) return null;
+
+      //   const { email, password } = parsed.data;
+
+      //   const [user] = await db
+      //     .select()
+      //     .from(users)
+      //     .where(eq(users.email, email))
+      //     .limit(1);
+
+      //   const passwordMatch = await bcrypt.compare(
+      //     password,
+      //     user?.password ?? "$2b$12$invalidhashfortimingprevention"
+      //   );
+
+      //   if (!user || !passwordMatch) return null;
+
+      //   return { id: user.id, email: user.email };
+      // },
       async authorize(credentials) {
-        const parsed = loginSchema.safeParse(credentials);
-        if (!parsed.success) return null;
+  console.log("=== AUTHORIZE CALLED ===");
+  console.log("email:", credentials?.email);
 
-        const { email, password } = parsed.data;
+  const parsed = loginSchema.safeParse(credentials);
+  console.log("zod parsed:", parsed.success);
+  if (!parsed.success) {
+    console.log("zod errors:", parsed.error.errors);
+    return null;
+  }
 
-        const [user] = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, email))
-          .limit(1);
+  const { email, password } = parsed.data;
 
-        const passwordMatch = await bcrypt.compare(
-          password,
-          user?.password ?? "$2b$12$invalidhashfortimingprevention"
-        );
+  let user;
+  try {
+    const result = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+    user = result[0];
+    console.log("db query success, user found:", !!user);
+  } catch (err) {
+    console.log("db query error:", err);
+    return null;
+  }
 
-        if (!user || !passwordMatch) return null;
+  const passwordMatch = await bcrypt.compare(
+    password,
+    user?.password ?? "$2b$12$invalidhashfortimingprevention"
+  );
+  console.log("password match:", passwordMatch);
 
-        return { id: user.id, email: user.email };
-      },
+  if (!user || !passwordMatch) return null;
+
+  console.log("returning user:", user.id);
+  return { id: user.id, email: user.email };
+},
     }),
   ],
   callbacks: {
