@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Dot,
 } from "recharts";
+import { TrendingUp } from "lucide-react";
 
 interface ChartData {
   date: string;
@@ -25,6 +26,14 @@ function formatXAxis(dateStr: string) {
   return `${date.getMonth() + 1}/${date.getDate()}`;
 }
 
+function formatDateLabel(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 function CustomTooltip({
   active,
   payload,
@@ -36,17 +45,35 @@ function CustomTooltip({
 }) {
   if (!active || !payload?.length) return null;
 
+  const formattedDate = label
+    ? new Date(label).toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      })
+    : label;
+
   return (
     <div
-      className="px-3 py-2 rounded-lg text-xs"
+      className="px-3 py-2 rounded-lg"
       style={{
-        backgroundColor: "#1c1c1f",
-        border: "1px solid #27272a",
-        color: "#ffffff",
+        backgroundColor: "var(--surface)",
+        border: "1px solid var(--border)",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
       }}
     >
-      <p style={{ color: "#71717a" }}>{label}</p>
-      <p className="font-semibold mt-0.5">{payload[0].value} clicks</p>
+      <p style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}>
+        {formattedDate}
+      </p>
+      <p
+        className="font-semibold mt-0.5"
+        style={{ fontSize: "var(--text-sm)", color: "var(--text-primary)" }}
+      >
+        {payload[0].value}{" "}
+        <span style={{ color: "var(--text-muted)" }}>
+          click{payload[0].value !== 1 ? "s" : ""}
+        </span>
+      </p>
     </div>
   );
 }
@@ -57,59 +84,83 @@ export function ClicksChart({ data }: ClicksChartProps) {
       <div
         className="flex flex-col items-center justify-center h-64 rounded-xl"
         style={{
-          backgroundColor: "#111113",
-          border: "1px solid #27272a",
+          backgroundColor: "var(--surface)",
+          border: "1px solid var(--border)",
         }}
       >
-        <p className="text-white font-medium mb-1">No clicks yet</p>
-        <p className="text-sm" style={{ color: "#52525b" }}>
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+          style={{ backgroundColor: "var(--bg)" }}
+        >
+          <TrendingUp className="w-5 h-5" style={{ color: "var(--accent)" }} />
+        </div>
+        <p
+          className="font-medium mb-1"
+          style={{ color: "var(--text-primary)", fontSize: "var(--text-sm)" }}
+        >
+          No clicks yet
+        </p>
+        <p style={{ fontSize: "var(--text-sm)", color: "var(--text-subtle)" }}>
           Share your short link to start seeing data here.
         </p>
       </div>
     );
   }
 
+  const dateRange =
+    data.length >= 2
+      ? `${formatDateLabel(data[0].date)} – ${formatDateLabel(data[data.length - 1].date)}`
+      : formatDateLabel(data[0].date);
+
   return (
-    <ResponsiveContainer width="100%" height={280}>
-      <AreaChart
-        data={data}
-        margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+    <div>
+      <p
+        className="mb-4"
+        style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
       >
-        <defs>
-          <linearGradient id="clicksGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <CartesianGrid
-          strokeDasharray="0"
-          stroke="#27272a"
-          vertical={false}
-        />
-        <XAxis
-          dataKey="date"
-          tickFormatter={formatXAxis}
-          tick={{ fill: "#52525b", fontSize: 11 }}
-          axisLine={false}
-          tickLine={false}
-          interval="preserveStartEnd"
-        />
-        <YAxis
-          tick={{ fill: "#52525b", fontSize: 11 }}
-          axisLine={false}
-          tickLine={false}
-        />
-        <Tooltip content={<CustomTooltip />} />
-        <Area
-          type="monotone"
-          dataKey="count"
-          stroke="var(--accent)"
-          strokeWidth={2}
-          fill="url(#clicksGradient)"
-          dot={<Dot r={3} fill="var(--accent)" stroke="var(--accent)" />}
-          activeDot={{ r: 5, fill: "var(--accent)", stroke: "var(--bg)" }}
-        />
-      </AreaChart>
-    </ResponsiveContainer>
+        {dateRange}
+      </p>
+      <ResponsiveContainer width="100%" height={280}>
+        <AreaChart
+          data={data}
+          margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+        >
+          <defs>
+            <linearGradient id="clicksGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid
+            strokeDasharray="0"
+            stroke="var(--border)"
+            vertical={false}
+          />
+          <XAxis
+            dataKey="date"
+            tickFormatter={formatXAxis}
+            tick={{ fill: "var(--text-subtle)", fontSize: 11 }}
+            axisLine={false}
+            tickLine={false}
+            interval="preserveStartEnd"
+          />
+          <YAxis
+            tick={{ fill: "var(--text-subtle)", fontSize: 11 }}
+            axisLine={false}
+            tickLine={false}
+          />
+          <Tooltip content={<CustomTooltip />} />
+          <Area
+            type="monotone"
+            dataKey="count"
+            stroke="var(--accent)"
+            strokeWidth={2}
+            fill="url(#clicksGradient)"
+            dot={<Dot r={3} fill="var(--accent)" stroke="var(--accent)" />}
+            activeDot={{ r: 5, fill: "var(--accent)", stroke: "var(--bg)" }}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

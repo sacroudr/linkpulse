@@ -7,25 +7,40 @@ import {
   LayoutDashboard,
   TrendingUp,
   Palette,
-  Sun,
   LogOut,
   Zap,
 } from "lucide-react";
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Analytics", href: "/dashboard/analytics", icon: TrendingUp },
-  { label: "Design System", href: "/dashboard/design", icon: Palette },
+  {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+    tooltip: "View your links and stats",
+  },
+  {
+    label: "Analytics",
+    href: "/dashboard/analytics",
+    icon: TrendingUp,
+    tooltip: "Analyze link performance",
+  },
+  {
+    label: "Design System",
+    href: "/dashboard/design",
+    icon: Palette,
+    tooltip: "Explore UI components and tokens",
+  },
 ];
 
 interface SidebarProps {
   userEmail: string;
+  userName?: string;
 }
 
-export function Sidebar({ userEmail }: SidebarProps) {
+export function Sidebar({ userEmail, userName }: SidebarProps) {
   const pathname = usePathname();
-  const initial = userEmail.charAt(0).toUpperCase();
-  const name = userEmail.split("@")[0];
+  const displayName = userName || userEmail.split("@")[0];
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <aside
@@ -37,10 +52,19 @@ export function Sidebar({ userEmail }: SidebarProps) {
     >
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-4 py-4">
-        <div className="w-8 h-8  rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "var(--accent)", borderRadius: "var(--radius)", }}>
+        <div
+          className="w-8 h-8 flex items-center justify-center flex-shrink-0"
+          style={{
+            backgroundColor: "var(--accent)",
+            borderRadius: "var(--radius)",
+          }}
+        >
           <Zap className="w-4 h-4 text-white fill-white" />
         </div>
-        <span className="text-base font-semibold" style={{ color: "var(--text-primary)" }}>
+        <span
+          className="text-base font-semibold"
+          style={{ color: "var(--text-primary)" }}
+        >
           LinkPulse
         </span>
       </div>
@@ -53,26 +77,30 @@ export function Sidebar({ userEmail }: SidebarProps) {
         >
           Navigation
         </p>
-        <nav className="space-y-0.5">
-          {navItems.map(({ label, href, icon: Icon }) => {
+        <nav className="space-y-0.5" role="navigation" aria-label="Main navigation">
+          {navItems.map(({ label, href, icon: Icon, tooltip }) => {
             const isActive =
-                pathname === href ||
-                (href === "/dashboard/analytics" &&
-                    pathname.startsWith("/dashboard/stats"));
+              pathname === href ||
+              (href === "/dashboard/analytics" &&
+                pathname.startsWith("/dashboard/stats"));
             return (
               <Link
                 key={href}
                 href={href}
-                className="flex items-center justify-between gap-2.5 px-2 py-2 rounded-lg text-sm transition-colors group"
+                className="flex items-center justify-between gap-2.5 px-2 py-2 rounded-lg text-sm transition-colors"
                 style={{
                   backgroundColor: isActive ? "var(--bg)" : "transparent",
                   color: isActive ? "var(--text-primary)" : "var(--text-muted)",
                 }}
+                title={tooltip}
+                aria-current={isActive ? "page" : undefined}
                 onMouseEnter={(e) => {
-                  if (!isActive) e.currentTarget.style.backgroundColor = "var(--bg)";
+                  if (!isActive)
+                    e.currentTarget.style.backgroundColor = "var(--bg)";
                 }}
                 onMouseLeave={(e) => {
-                  if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
+                  if (!isActive)
+                    e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
                 <div className="flex items-center gap-2.5">
@@ -80,7 +108,10 @@ export function Sidebar({ userEmail }: SidebarProps) {
                   <span className="font-medium">{label}</span>
                 </div>
                 {isActive && (
-                  <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "var(--accent)" }} />
+                  <div
+                    className="w-1.5 h-1.5 rounded-full flex-shrink-0 active-dot"
+                    style={{ backgroundColor: "var(--accent)" }}
+                  />
                 )}
               </Link>
             );
@@ -93,33 +124,24 @@ export function Sidebar({ userEmail }: SidebarProps) {
         className="px-3 py-4 space-y-1"
         style={{ borderTop: "1px solid var(--border)" }}
       >
-        {/* Light mode toggle */}
-        <button
-          className="flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm w-full transition-colors"
-          style={{ color: "var(--text-muted)" }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.backgroundColor = "var(--bg)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.backgroundColor = "transparent")
-          }
-        >
-          <Sun className="w-4 h-4" />
-          <span className="font-medium">Light mode</span>
-        </button>
-
         {/* User info */}
         <div className="flex items-center gap-2.5 px-2 py-2">
-          <div className="w-7 h-7 rounded-full  flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "var(--accent)" }}>
+          <div
+            className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ backgroundColor: "var(--accent)" }}
+          >
             <span className="text-xs font-semibold text-white">{initial}</span>
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-xs font-medium text-white truncate capitalize">
-              {name}
+            <span
+              className="text-xs font-medium truncate capitalize"
+              style={{ color: "var(--text-primary)" }}
+            >
+              {displayName}
             </span>
             <span
               className="text-xs truncate"
-              style={{ color:  "var(--text-subtle)" }}
+              style={{ color: "var(--text-subtle)" }}
             >
               {userEmail}
             </span>
@@ -129,10 +151,12 @@ export function Sidebar({ userEmail }: SidebarProps) {
         {/* Sign out */}
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm w-full transition-colors"
-          style={{ color: "#71717a" }}
+          className="flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm w-full transition-colors cursor-pointer"
+          style={{ color: "var(--text-muted)" }}
+          title="Sign out of your account"
+          aria-label="Sign out"
           onMouseEnter={(e) =>
-            (e.currentTarget.style.backgroundColor = "#1c1c1f")
+            (e.currentTarget.style.backgroundColor = "var(--bg)")
           }
           onMouseLeave={(e) =>
             (e.currentTarget.style.backgroundColor = "transparent")

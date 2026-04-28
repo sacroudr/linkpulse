@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [shake, setShake] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -26,13 +27,23 @@ export default function LoginPage() {
     });
 
     if (result?.error) {
-      setError("Invalid email or password");
+      setError("Invalid email or password. Please try again.");
       setLoading(false);
+      setShake(true);
+      setTimeout(() => setShake(false), 400);
       return;
     }
 
     router.push("/dashboard");
   }
+
+  const inputStyle = {
+    fontSize: "var(--text-sm)",
+    backgroundColor: "var(--bg)",
+    border: "1px solid var(--border)",
+    color: "var(--text-primary)",
+    borderRadius: "var(--radius)",
+  };
 
   return (
     <div
@@ -43,104 +54,97 @@ export default function LoginPage() {
         backgroundSize: "24px 24px",
       }}
     >
-      {/* Logo */}
       <div className="mb-8">
         <Logo />
       </div>
 
-      {/* Card */}
       <div
-        className="w-full max-w-md rounded-2xl p-8"
+        className={`w-full max-w-md rounded-2xl p-8 ${shake ? "animate-shake" : ""}`}
         style={{
           backgroundColor: "var(--surface)",
           border: "1px solid var(--border)",
         }}
       >
-        {/* Heading */}
-        <h1 className="font-bold  mb-1" style={{ fontSize: "var(--text-2xl)", color: "var(--text-primary)" }}>Welcome back</h1>
-        <p className="text-sm mb-6" style={{ color: "#71717a" }}>
-          Sign in to your Linkpulse account.
+        <h1
+          className="font-bold mb-1"
+          style={{ fontSize: "var(--text-2xl)", color: "var(--text-primary)" }}
+        >
+          Welcome back
+        </h1>
+        <p className="mb-6" style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}>
+          Sign in to your LinkPulse account.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email */}
           <div className="space-y-1.5">
             <label
+              htmlFor="login-email"
               className="block font-semibold tracking-widest uppercase"
               style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}
             >
               Email address
             </label>
             <input
+              id="login-email"
               name="email"
               type="email"
               placeholder="alex@example.com"
               required
-              className="w-full rounded-lg px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors"
-              style={{
-                fontSize: "var(--text-sm)" ,
-                backgroundColor: "var(--bg)",
-                border: "1px solid var(--border)",
-                color: "var(--text-primary)",
-                borderRadius: "var(--radius)",
-              }}
-              onFocus={(e) =>
-                (e.currentTarget.style.borderColor = "var(--accent)")
-              }
-              onBlur={(e) =>
-                (e.currentTarget.style.borderColor = "#27272a")
-              }
+              autoComplete="email"
+              className="w-full px-4 py-3 placeholder:text-zinc-600 outline-none transition-colors"
+              style={inputStyle}
+              onFocus={(e) => (e.currentTarget.style.borderColor = "var(--accent)")}
+              onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
             />
           </div>
 
           {/* Password */}
           <div className="space-y-1.5">
             <label
+              htmlFor="login-password"
               className="block font-semibold tracking-widest uppercase"
               style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}
             >
               Password
             </label>
             <div className="relative">
-            <input
-              name="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              required
-              className="w-full rounded-lg px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors"
-              style={{
-                fontSize: "var(--text-sm)" ,
-                backgroundColor: "var(--bg)",
-                border: "1px solid var(--border)",
-                color: "var(--text-primary)",
-                borderRadius: "var(--radius)",
-                paddingRight: "2.5rem",
-              }}
-              onFocus={(e) =>
-                (e.currentTarget.style.borderColor = "var(--accent)")
-              }
-              onBlur={(e) =>
-                (e.currentTarget.style.borderColor = "#27272a")
-              }
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
-              style={{ color: "#71717a" }}
-            >
-              {showPassword ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
-            </button>
+              <input
+                id="login-password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                required
+                autoComplete="current-password"
+                className="w-full px-4 py-3 placeholder:text-zinc-600 outline-none transition-colors"
+                style={{ ...inputStyle, paddingRight: "2.5rem" }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "var(--accent)")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                style={{ color: "var(--text-muted)" }}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
             </div>
           </div>
 
           {/* Error */}
           {error && (
-            <p className="text-sm" style={{ color: "#ef4444" }}>
+            <p
+              role="alert"
+              aria-live="polite"
+              className="flex items-center gap-1.5"
+              style={{ fontSize: "var(--text-sm)", color: "#ef4444" }}
+            >
               {error}
             </p>
           )}
@@ -149,16 +153,18 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-full text-sm font-semibold text-white transition-opacity disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
-            style={{fontSize: "var(--text-sm)" , backgroundColor: "var(--accent)" }}
+            className="w-full py-3 rounded-full font-semibold text-white transition-opacity disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+            style={{ fontSize: "var(--text-sm)", backgroundColor: "var(--accent)" }}
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
 
-        {/* Footer */}
-        <p className="text-sm text-center mt-6" style={{ color: "#71717a" }}>
+        <p
+          className="text-center mt-6"
+          style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}
+        >
           No account?{" "}
           <a
             href="/register"

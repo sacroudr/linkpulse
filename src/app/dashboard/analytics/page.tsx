@@ -1,13 +1,24 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { TrendingUp } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Analytics — LinkPulse",
+  description: "Select a link to view its performance analytics.",
+};
 
 export default function AnalyticsPage() {
   return (
     <div className="max-w-5xl">
       {/* Page header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white">Analytics</h1>
-        <p className="text-sm mt-1" style={{ color: "#71717a" }}>
+        <h1
+          className="font-bold"
+          style={{ fontSize: "var(--text-3xl)", color: "var(--text-primary)" }}
+        >
+          Analytics
+        </h1>
+        <p className="mt-1" style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}>
           Select a link to view its performance.
         </p>
       </div>
@@ -16,26 +27,35 @@ export default function AnalyticsPage() {
       <div
         className="rounded-xl flex flex-col items-center justify-center py-32"
         style={{
-          backgroundColor: "#111113",
-          border: "1px solid #27272a",
+          backgroundColor: "var(--surface)",
+          border: "1px solid var(--border)",
         }}
       >
         <div
           className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-          style={{ backgroundColor: "#1c1c1f" }}
+          style={{ backgroundColor: "var(--bg)" }}
         >
           <TrendingUp className="w-5 h-5" style={{ color: "var(--accent)" }} />
         </div>
-        <p className="text-white font-medium mb-1">No link selected</p>
-        <p className="text-sm mb-6" style={{ color: "#52525b" }}>
+        <p
+          className="font-medium mb-1"
+          style={{ color: "var(--text-primary)", fontSize: "var(--text-sm)" }}
+        >
+          No link selected
+        </p>
+        <p
+          className="mb-6 text-center max-w-xs"
+          style={{ fontSize: "var(--text-sm)", color: "var(--text-subtle)" }}
+        >
           Go to your dashboard and click the stats icon on any link.
         </p>
         <Link
           href="/dashboard"
-          className="text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          className="font-medium px-4 py-2 transition-colors hover:opacity-80"
           style={{
-            backgroundColor: "#1c1c1f",
-            border: "1px solid #27272a",
+            fontSize: "var(--text-sm)",
+            backgroundColor: "var(--bg)",
+            border: "1px solid var(--border)",
             color: "var(--accent)",
             borderRadius: "var(--radius)",
           }}
