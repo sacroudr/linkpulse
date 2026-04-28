@@ -43,7 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   const parsed = loginSchema.safeParse(credentials);
   console.log("zod parsed:", parsed.success);
   if (!parsed.success) {
-    console.log("zod errors:", parsed.error.errors);
+    console.log("zod errors:", parsed.error.issues);
     return null;
   }
 
