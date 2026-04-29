@@ -1,6 +1,8 @@
 import { eq, desc, count } from "drizzle-orm";
 import { db } from "./db";
 import { links, clicks } from "./schema";
+import { getGeoFromIp } from "./geo";
+import { getOsFromUserAgent } from "./ua";
 
 export async function getLinksByUserId(userId: string) {
   return db
@@ -61,12 +63,37 @@ export async function deleteLinkById(id: string) {
   return deleted ?? null;
 }
 
+// export async function logClick(data: {
+//   linkId: string;
+//   userAgent: string | null;
+// }) {
+//   try {
+//     await db.insert(clicks).values(data);
+//   } catch (error) {
+//     console.error("Failed to log click:", error);
+//   }
+// }
+
 export async function logClick(data: {
   linkId: string;
   userAgent: string | null;
+  ip: string | null;
+  referer: string | null;
 }) {
   try {
-    await db.insert(clicks).values(data);
+    const [geo, os] = await Promise.all([
+      getGeoFromIp(data.ip ?? ""),
+      Promise.resolve(getOsFromUserAgent(data.userAgent)),
+    ]);
+
+    await db.insert(clicks).values({
+      linkId: data.linkId,
+      userAgent: data.userAgent,
+      country: geo.country,
+      city: geo.city,
+      os,
+      referer: data.referer,
+    });
   } catch (error) {
     console.error("Failed to log click:", error);
   }
