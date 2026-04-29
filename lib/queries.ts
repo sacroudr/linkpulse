@@ -12,6 +12,7 @@ export async function getLinksByUserId(userId: string) {
       shortCode: links.shortCode,
       createdAt: links.createdAt,
       userId: links.userId,
+      isActive: links.isActive,
       clickCount: count(clicks.id),
     })
     .from(links)
@@ -63,17 +64,6 @@ export async function deleteLinkById(id: string) {
   return deleted ?? null;
 }
 
-// export async function logClick(data: {
-//   linkId: string;
-//   userAgent: string | null;
-// }) {
-//   try {
-//     await db.insert(clicks).values(data);
-//   } catch (error) {
-//     console.error("Failed to log click:", error);
-//   }
-// }
-
 export async function logClick(data: {
   linkId: string;
   userAgent: string | null;
@@ -105,4 +95,14 @@ export async function getClicksByLinkId(linkId: string) {
     .from(clicks)
     .where(eq(clicks.linkId, linkId))
     .orderBy(desc(clicks.clickedAt));
+}
+
+export async function toggleLinkActive(id: string, isActive: boolean) {
+  const [updated] = await db
+    .update(links)
+    .set({ isActive })
+    .where(eq(links.id, id))
+    .returning();
+
+  return updated ?? null;
 }

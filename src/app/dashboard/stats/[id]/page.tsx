@@ -7,6 +7,7 @@ import { getClicksByLinkId, getLinkById } from "../../../../../lib/queries";
 import { StatCard } from "../../../../../components/ui/StatCard";
 import { ClicksChart } from "../../../../../components/links/ClicksChart";
 import { CopyButton } from "../../../../../components/links/CopyButton";
+import { ActiveToggle } from "../../../../../components/links/ActiveToggle";
 
 export const metadata: Metadata = {
   title: "Link Stats — LinkPulse",
@@ -135,7 +136,35 @@ export default async function StatsPage({
         }}
       >
         {/* Top row */}
-        <div className="flex items-start justify-between mb-4 gap-4">
+        <div className="flex items-start justify-between mb-4">
+        <div>
+          <p
+            className="text-xs font-semibold tracking-widest uppercase mb-2"
+            style={{ color: "var(--text-subtle, #52525b)" }}
+          >
+            Short URL
+          </p>
+          <div className="flex items-center gap-2">
+            <span
+              className="text-2xl font-bold font-mono"
+              style={{ color: "var(--accent)" }}
+            >
+              {shortUrl}
+            </span>
+            <CopyButton
+              text={`${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/${link.shortCode}`}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <ActiveToggle linkId={link.id} isActive={link.isActive} />
+          <span className="text-sm" style={{ color: "var(--text-subtle, #52525b)" }}>
+            Created {formatDate(link.createdAt)}
+          </span>
+        </div>
+      </div>
+        {/* <div className="flex items-start justify-between mb-4 gap-4">
           <div className="min-w-0">
             <p
               className="font-semibold tracking-widest uppercase mb-2"
@@ -154,9 +183,9 @@ export default async function StatsPage({
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center gap-3 flex-shrink-0"> */}
             {/* Share button */}
-            <CopyButton text={shortUrl} showLabel />
+            {/* <CopyButton text={shortUrl} showLabel />
 
             <span
               className="font-semibold px-2.5 py-1"
@@ -174,7 +203,7 @@ export default async function StatsPage({
               {formatTimeAgo(link.createdAt)}
             </span>
           </div>
-        </div>
+        </div> */}
 
         {/* Destination */}
         <div>
