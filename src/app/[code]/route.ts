@@ -54,6 +54,7 @@ export async function GET(
       null;
 
     const referer = req.headers.get("referer");
+    console.log("referer header:", referer);
 
     await logClick({
       linkId: link.id,
