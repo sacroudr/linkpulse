@@ -15,6 +15,13 @@
       "when": 1776888285036,
       "tag": "0001_clever_norrin_radd",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777480567900,
+      "tag": "0002_unknown_eddie_brock",
+      "breakpoints": true
     }
   ]
 }
