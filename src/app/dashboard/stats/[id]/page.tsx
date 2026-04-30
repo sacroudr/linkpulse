@@ -8,6 +8,7 @@ import { StatCard } from "../../../../../components/ui/StatCard";
 import { ClicksChart } from "../../../../../components/links/ClicksChart";
 import { CopyButton } from "../../../../../components/links/CopyButton";
 import { ActiveToggle } from "../../../../../components/links/ActiveToggle";
+import { ChartSection } from "../../../../../components/links/ChartSection";
 
 export const metadata: Metadata = {
   title: "Link Stats — LinkPulse",
@@ -260,7 +261,9 @@ export default async function StatsPage({
       </div>
 
       {/* Chart card */}
-      <div
+      {/* Chart card */}
+      <ChartSection chartData={chartData} />
+      {/* <div
         className="rounded-xl p-6"
         style={{
           backgroundColor: "var(--surface)",
@@ -296,7 +299,7 @@ export default async function StatsPage({
         </div>
 
         <ClicksChart data={chartData} />
-      </div>
+      </div> */}
     </div>
   );
 }
