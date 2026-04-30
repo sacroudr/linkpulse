@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ExternalLink, ArrowLeft } from "lucide-react";
 import { auth } from "../../../../../lib/auth";
 import { getClicksByLinkId, getLinkById } from "../../../../../lib/queries";
+import { buildChartData, getTopEntries } from "../../../../../lib/stats";
 import { StatCard } from "../../../../../components/ui/StatCard";
 import { CopyButton } from "../../../../../components/links/CopyButton";
 import { ActiveToggle } from "../../../../../components/links/ActiveToggle";
@@ -41,50 +42,6 @@ function getAvgPerDay(
   return Math.round(totalClicks / chartData.length);
 }
 
-function buildChartData(clicks: { clickedAt: Date }[]) {
-  if (clicks.length === 0) return [];
-
-  const grouped = clicks.reduce(
-    (acc, click) => {
-      const day = new Date(click.clickedAt).toISOString().split("T")[0];
-      acc[day] = (acc[day] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
-
-  const dates = Object.keys(grouped).sort();
-  const start = new Date(dates[0]);
-  const end = new Date(dates[dates.length - 1]);
-  const result = [];
-
-  const current = new Date(start);
-  while (current <= end) {
-    const dateStr = current.toISOString().split("T")[0];
-    result.push({ date: dateStr, count: grouped[dateStr] ?? 0 });
-    current.setDate(current.getDate() + 1);
-  }
-
-  return result;
-}
-
-function getTopEntries(
-  items: (string | null)[],
-  limit = 5
-): { name: string; count: number }[] {
-  const counts: Record<string, number> = {};
-
-  for (const item of items) {
-    if (!item) continue;
-    counts[item] = (counts[item] || 0) + 1;
-  }
-
-  return Object.entries(counts)
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, limit);
-}
-
 export default async function StatsPage({
   params,
 }: {
@@ -105,7 +62,6 @@ export default async function StatsPage({
   const peak = getPeakDay(chartData);
   const avg = getAvgPerDay(totalClicks, chartData);
 
-  // Breakdown data
   const topCountries = getTopEntries(clicks.map((c) => c.country));
   const topCities = getTopEntries(clicks.map((c) => c.city));
   const topOs = getTopEntries(clicks.map((c) => c.os));
@@ -242,7 +198,7 @@ export default async function StatsPage({
           total={totalClicks}
           emptyMessage="No city data yet."
         />
-        
+
         <BreakdownCard
           title="Operating systems"
           items={topOs}

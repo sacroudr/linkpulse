@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
+import { notFound } from "next/navigation";
 import { getLinkByShortCode, logClick } from "../../../lib/queries";
 
 export async function GET(
@@ -7,37 +8,29 @@ export async function GET(
 ) {
   const { code } = await params;
 
-  try {
-    const link = await getLinkByShortCode(code);
+  // DB lookup must be outside any try/catch so that notFound() propagates
+  // correctly — calling notFound() inside catch would suppress the 404.
+  const link = await getLinkByShortCode(code);
 
-    if (!link) {
-      return NextResponse.redirect(new URL("/not-found", req.url));
-    }
+  if (!link || !link.isActive) {
+    notFound();
+  }
 
-    // Check if link is active
-    if (!link.isActive) {
-      return NextResponse.redirect(new URL("/not-found", req.url));
-    }
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+    req.headers.get("x-real-ip") ??
+    null;
 
-    // Get IP from headers (Vercel sets x-forwarded-for)
-    const ip =
-      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-      req.headers.get("x-real-ip") ??
-      null;
-
-    const referer = req.headers.get("referer");
-    console.log("referer header:", referer);
-
-    await logClick({
+  // Schedule click logging to run after the redirect response is sent.
+  // Using after() prevents the geo-lookup latency from blocking the redirect.
+  after(() =>
+    logClick({
       linkId: link.id,
       userAgent: req.headers.get("user-agent"),
       ip,
-      referer,
-    });
+      referer: req.headers.get("referer"),
+    })
+  );
 
-    return NextResponse.redirect(new URL(link.originalUrl));
-  } catch (error) {
-    console.error("Redirect error:", error);
-    return NextResponse.redirect(new URL("/", req.url));
-  }
+  return NextResponse.redirect(new URL(link.originalUrl), { status: 302 });
 }

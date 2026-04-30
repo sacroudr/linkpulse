@@ -5,14 +5,16 @@ import { z } from "zod";
 import { db } from "../../../../lib/db";
 import { users } from "../../../../lib/schema";
 
-const registerSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const registerSchema = z
+  .object({
+    email: z.string().email(),
+    password: z.string().min(6),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 // TODO: add rate limiting before production (e.g. upstash/ratelimit)
 export async function POST(req: Request) {
@@ -28,22 +30,22 @@ export async function POST(req: Request) {
 
   const { email, password } = parsed.data;
 
-  const [existing] = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, email))
-    .limit(1);
-
-  if (existing) {
-    return NextResponse.json(
-      { error: "Email already in use" },
-      { status: 409 }
-    );
-  }
-
-  const hashed = await bcrypt.hash(password, 12);
-
   try {
+    const [existing] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+
+    if (existing) {
+      return NextResponse.json(
+        { error: "Email already in use" },
+        { status: 409 }
+      );
+    }
+
+    const hashed = await bcrypt.hash(password, 12);
+
     const [user] = await db
       .insert(users)
       .values({ email, password: hashed })

@@ -6,6 +6,12 @@ interface LinkRow {
   isActive: boolean;
 }
 
+/**
+ * Serialises an array of link rows to a CSV file and triggers a browser download.
+ * Special characters (including double-quotes) inside cell values are escaped
+ * per RFC 4180 so the output is safe to open in Excel and Google Sheets.
+ * Must only be called from client-side code (requires browser APIs).
+ */
 export function exportLinksToCSV(links: LinkRow[], filename = "links.csv") {
   const headers = [
     "Short Code",

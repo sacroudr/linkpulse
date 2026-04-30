@@ -3,8 +3,12 @@ interface GeoData {
   city: string | null;
 }
 
+/**
+ * Resolves an IP address to country and city via ip-api.com (free, no key required).
+ * Returns nulls for private/loopback addresses or on any lookup failure.
+ * Responses are cached for one hour by Next.js fetch caching.
+ */
 export async function getGeoFromIp(ip: string): Promise<GeoData> {
-  // Skip lookup for localhost
   if (
     !ip ||
     ip === "127.0.0.1" ||
@@ -16,9 +20,19 @@ export async function getGeoFromIp(ip: string): Promise<GeoData> {
   }
 
   try {
-    const res = await fetch(`http://ip-api.com/json/${ip}?fields=country,regionName,status`, {
-      next: { revalidate: 3600 }, // cache for 1 hour
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
+
+    // Fields must include "city" (not "regionName") to populate the city column.
+    const res = await fetch(
+      `http://ip-api.com/json/${ip}?fields=country,city,status`,
+      {
+        signal: controller.signal,
+        next: { revalidate: 3600 },
+      }
+    );
+
+    clearTimeout(timeout);
 
     if (!res.ok) return { country: null, city: null };
 
