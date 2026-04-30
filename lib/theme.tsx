@@ -133,16 +133,6 @@ function applyAccentWithSaturation(hex: string, saturationOverride: number): str
   return `hsl(${h}, ${saturationOverride}%, ${l}%)`;
 }
 
-// function loadFromStorage(): typeof defaults {
-//   try {
-//     const stored = localStorage.getItem(STORAGE_KEY);
-//     if (!stored) return defaults;
-//     return { ...defaults, ...JSON.parse(stored) };
-//   } catch {
-//     return defaults;
-//   }
-// }
-
 function loadFromStorage(): typeof defaults {
   if (typeof window === "undefined") return defaults;
   try {
@@ -163,26 +153,6 @@ function saveToStorage(theme: typeof defaults) {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // const [mounted, setMounted] = useState(false);
-  // const [mode, setModeState] = useState<Mode>(defaults.mode);
-  // const [font, setFontState] = useState<FontFamily>(defaults.font);
-  // const [fontSize, setFontSizeState] = useState<FontSize>(defaults.fontSize);
-  // const [shape, setShapeState] = useState<Shape>(defaults.shape);
-  // const [density, setDensityState] = useState<Density>(defaults.density);
-  // const [accentColor, setAccentColorState] = useState(defaults.accentColor);
-  // const [saturation, setSaturationState] = useState(defaults.saturation);
-
-  // useEffect(() => {
-  //   const saved = loadFromStorage();
-  //   setModeState(saved.mode);
-  //   setFontState(saved.font);
-  //   setFontSizeState(saved.fontSize);
-  //   setShapeState(saved.shape);
-  //   setDensityState(saved.density);
-  //   setAccentColorState(saved.accentColor);
-  //   setSaturationState(saved.saturation ?? 100);
-  //   setMounted(true);
-  // }, []);
 
   // Lazy initialization — reads localStorage once on mount, no setState in effects
   const [mode, setModeState] = useState<Mode>(() => loadFromStorage().mode);
@@ -192,44 +162,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [density, setDensityState] = useState<Density>(() => loadFromStorage().density);
   const [accentColor, setAccentColorState] = useState<string>(() => loadFromStorage().accentColor);
   const [saturation, setSaturationState] = useState<number>(() => loadFromStorage().saturation ?? 100);
-
-  // useEffect(() => {
-  //   if (!mounted) return;
-
-  //   const colors = modeColors[mode];
-  //   const root = document.documentElement;
-  //   const px = fontSizeMap[fontSize];
-
-  //   root.style.fontSize = `${px}px`;
-  //   root.style.setProperty("--base-font-size", `${px}px`);
-  //   root.style.setProperty("--text-xs", `${px * 0.75}px`);
-  //   root.style.setProperty("--text-sm", `${px * 0.875}px`);
-  //   root.style.setProperty("--text-base", `${px}px`);
-  //   root.style.setProperty("--text-lg", `${px * 1.125}px`);
-  //   root.style.setProperty("--text-xl", `${px * 1.25}px`);
-  //   root.style.setProperty("--text-2xl", `${px * 1.5}px`);
-  //   root.style.setProperty("--text-3xl", `${px * 1.875}px`);
-  //   root.style.setProperty("--text-4xl", `${px * 2.25}px`);
-
-  //   root.style.setProperty("--bg", colors.bg);
-  //   root.style.setProperty("--surface", colors.surface);
-  //   root.style.setProperty("--border", colors.border);
-  //   root.style.setProperty("--text-primary", colors.textPrimary);
-  //   root.style.setProperty("--text-muted", colors.textMuted);
-  //   root.style.setProperty(
-  //     "--accent",
-  //     applyAccentWithSaturation(accentColor, saturation)
-  //   );
-  //   root.style.setProperty("--radius", shapeRadius[shape]);
-  //   root.style.setProperty("--density-padding", densityPadding[density]);
-  //   root.style.setProperty("--font-ui", fontStack[font]);
-
-  //   document.body.style.fontFamily = fontStack[font];
-  //   document.body.style.backgroundColor = colors.bg;
-  //   document.body.style.color = colors.textPrimary;
-
-  //   saveToStorage({ mode, font, fontSize, shape, density, accentColor, saturation });
-  // }, [mounted, mode, font, fontSize, shape, density, accentColor, saturation]);
 
   useEffect(() => {
   const colors = modeColors[mode];
@@ -285,7 +217,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setSaturationState(defaults.saturation);
     saveToStorage(defaults);
   }
-
 
   return (
     <ThemeContext.Provider
