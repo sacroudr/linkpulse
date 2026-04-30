@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { ExternalLink, Share2, ChevronRight } from "lucide-react";
+import { ExternalLink, ChevronRight, ArrowLeft } from "lucide-react";
 import { auth } from "../../../../../lib/auth";
 import { getClicksByLinkId, getLinkById } from "../../../../../lib/queries";
 import { StatCard } from "../../../../../components/ui/StatCard";
-import { ClicksChart } from "../../../../../components/links/ClicksChart";
 import { CopyButton } from "../../../../../components/links/CopyButton";
 import { ActiveToggle } from "../../../../../components/links/ActiveToggle";
 import { ChartSection } from "../../../../../components/links/ChartSection";
+import { BreakdownCard } from "../../../../../components/links/BreakdownCard";
 
 export const metadata: Metadata = {
   title: "Link Stats — LinkPulse",
@@ -25,20 +25,6 @@ function formatDate(date: Date | string) {
     day: "numeric",
     year: "numeric",
   });
-}
-
-function formatTimeAgo(date: Date | string): string {
-  const now = Date.now();
-  const then = new Date(date).getTime();
-  const diffMs = now - then;
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) return "today";
-  if (diffDays === 1) return "yesterday";
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? "s" : ""} ago`;
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? "s" : ""} ago`;
-  return `${Math.floor(diffDays / 365)} year${Math.floor(diffDays / 365) > 1 ? "s" : ""} ago`;
 }
 
 function getPeakDay(chartData: { date: string; count: number }[]) {
@@ -81,6 +67,167 @@ function buildChartData(clicks: { clickedAt: Date }[]) {
   return result;
 }
 
+function getTopEntries(
+  items: (string | null)[],
+  limit = 5
+): { name: string; count: number }[] {
+  const counts: Record<string, number> = {};
+
+  for (const item of items) {
+    if (!item) continue;
+    counts[item] = (counts[item] || 0) + 1;
+  }
+
+  return Object.entries(counts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, limit);
+}
+
+// export default async function StatsPage({
+//   params,
+// }: {
+//   params: Promise<{ id: string }>;
+// }) {
+//   const { id } = await params;
+//   const session = await auth();
+
+//   if (!session?.user?.id) redirect("/login");
+
+//   const link = await getLinkById(id);
+
+//   if (!link) notFound();
+//   if (link.userId !== session.user.id) notFound();
+
+//   const clicks = await getClicksByLinkId(id);
+//   const chartData = buildChartData(clicks);
+//   const totalClicks = clicks.length;
+//   const peak = getPeakDay(chartData);
+//   const avg = getAvgPerDay(totalClicks, chartData);
+
+//   const appUrl =
+//     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+//   const shortUrl = `${appUrl}/${link.shortCode}`;
+
+//   return (
+//     <div className="max-w-5xl">
+//       {/* Breadcrumb */}
+//       <nav
+//         className="flex items-center gap-1.5 mb-6"
+//         aria-label="Breadcrumb"
+//         style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}
+//       >
+//         <Link
+//           href="/dashboard"
+//           className="transition-colors hover:opacity-80"
+//           style={{ color: "var(--text-muted)" }}
+//         >
+//           Dashboard
+//         </Link>
+//         <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--text-subtle)" }} />
+//         <span className="font-mono" style={{ color: "var(--accent)" }}>
+//           /{link.shortCode}
+//         </span>
+//       </nav>
+
+//       {/* Link info card */}
+//       <div
+//         className="rounded-xl p-6 mb-6"
+//         style={{
+//           backgroundColor: "var(--surface)",
+//           border: "1px solid var(--border)",
+//         }}
+//       >
+//         {/* Top row */}
+//         <div className="flex items-start justify-between mb-4">
+//         <div>
+//           <p
+//             className="text-xs font-semibold tracking-widest uppercase mb-2"
+//             style={{ color: "var(--text-subtle, #52525b)" }}
+//           >
+//             Short URL
+//           </p>
+//           <div className="flex items-center gap-2">
+//             <span
+//               className="text-2xl font-bold font-mono"
+//               style={{ color: "var(--accent)" }}
+//             >
+//               {shortUrl}
+//             </span>
+//             <CopyButton
+//               text={`${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/${link.shortCode}`}
+//             />
+//           </div>
+//         </div>
+
+//         <div className="flex items-center gap-3">
+//           <ActiveToggle linkId={link.id} isActive={link.isActive} />
+//           <span className="text-sm" style={{ color: "var(--text-subtle, #52525b)" }}>
+//             Created {formatDate(link.createdAt)}
+//           </span>
+//         </div>
+//       </div>
+//         {/* Destination */}
+//         <div>
+//           <p
+//             className="font-semibold tracking-widest uppercase mb-1.5"
+//             style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
+//           >
+//             Destination
+//           </p>
+//           <a
+//             href={link.originalUrl}
+//             target="_blank"
+//             rel="noopener noreferrer"
+//             className="inline-flex items-center gap-1.5 transition-colors hover:opacity-80"
+//             style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}
+//           >
+//             <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
+//             <span className="truncate max-w-xl">{link.originalUrl}</span>
+//           </a>
+//         </div>
+
+//         <p
+//           className="mt-3"
+//           style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
+//         >
+//           Created {formatDate(link.createdAt)}
+//         </p>
+//       </div>
+
+//       {/* Stat cards */}
+//       <div className="flex gap-4 mb-6">
+//         <StatCard
+//           label="Total clicks"
+//           value={formatCount(totalClicks)}
+//           description="all time"
+//           animationDelay={0}
+//         />
+//         <StatCard
+//           label="Peak day"
+//           value={
+//             peak.date !== "—"
+//               ? `${new Date(peak.date).getMonth() + 1}/${new Date(peak.date).getDate()}`
+//               : "—"
+//           }
+//           description={peak.count > 0 ? `${peak.count} clicks` : "no data yet"}
+//           animationDelay={80}
+//         />
+//         <StatCard
+//           label="Avg / day"
+//           value={avg}
+//           description="across tracked days"
+//           animationDelay={160}
+//         />
+//       </div>
+
+//       {/* Chart card */}
+//       <ChartSection chartData={chartData} />
+//     </div>
+//   );
+// }
+
+
 export default async function StatsPage({
   params,
 }: {
@@ -92,7 +239,6 @@ export default async function StatsPage({
   if (!session?.user?.id) redirect("/login");
 
   const link = await getLinkById(id);
-
   if (!link) notFound();
   if (link.userId !== session.user.id) notFound();
 
@@ -102,31 +248,25 @@ export default async function StatsPage({
   const peak = getPeakDay(chartData);
   const avg = getAvgPerDay(totalClicks, chartData);
 
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  const shortUrl = `${appUrl}/${link.shortCode}`;
-  const displayShortUrl = `shr.ly/${link.shortCode}`;
+  // Breakdown data
+  const topCountries = getTopEntries(clicks.map((c) => c.country));
+  const topCities = getTopEntries(clicks.map((c) => c.city));
+  const topOs = getTopEntries(clicks.map((c) => c.os));
+  const topReferers = getTopEntries(clicks.map((c) => c.referer));
+
+  const shortUrl = `shr.ly/${link.shortCode}`;
 
   return (
     <div className="max-w-5xl">
-      {/* Breadcrumb */}
-      <nav
-        className="flex items-center gap-1.5 mb-6"
-        aria-label="Breadcrumb"
-        style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}
+      {/* Back button */}
+      <Link
+        href="/dashboard"
+        className="inline-flex items-center gap-1.5 text-sm mb-6 transition-colors"
+        style={{ color: "var(--text-muted)" }}
       >
-        <Link
-          href="/dashboard"
-          className="transition-colors hover:opacity-80"
-          style={{ color: "var(--text-muted)" }}
-        >
-          Dashboard
-        </Link>
-        <ChevronRight className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--text-subtle)" }} />
-        <span className="font-mono" style={{ color: "var(--accent)" }}>
-          /{link.shortCode}
-        </span>
-      </nav>
+        <ArrowLeft className="w-4 h-4" />
+        Back to dashboard
+      </Link>
 
       {/* Link info card */}
       <div
@@ -136,81 +276,53 @@ export default async function StatsPage({
           border: "1px solid var(--border)",
         }}
       >
-        {/* Top row */}
         <div className="flex items-start justify-between mb-4">
-        <div>
-          <p
-            className="text-xs font-semibold tracking-widest uppercase mb-2"
-            style={{ color: "var(--text-subtle, #52525b)" }}
-          >
-            Short URL
-          </p>
-          <div className="flex items-center gap-2">
-            <span
-              className="text-2xl font-bold font-mono"
-              style={{ color: "var(--accent)" }}
-            >
-              {shortUrl}
-            </span>
-            <CopyButton
-              text={`${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/${link.shortCode}`}
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <ActiveToggle linkId={link.id} isActive={link.isActive} />
-          <span className="text-sm" style={{ color: "var(--text-subtle, #52525b)" }}>
-            Created {formatDate(link.createdAt)}
-          </span>
-        </div>
-      </div>
-        {/* <div className="flex items-start justify-between mb-4 gap-4">
-          <div className="min-w-0">
+          <div>
             <p
               className="font-semibold tracking-widest uppercase mb-2"
-              style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
+              style={{
+                fontSize: "var(--text-xs)",
+                color: "var(--text-subtle, #52525b)",
+              }}
             >
               Short URL
             </p>
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
               <span
                 className="font-bold font-mono"
-                style={{ fontSize: "var(--text-2xl)", color: "var(--accent)" }}
+                style={{
+                  fontSize: "var(--text-2xl)",
+                  color: "var(--accent)",
+                }}
               >
-                {displayShortUrl}
+                {shortUrl}
               </span>
-              <CopyButton text={shortUrl} />
+              <CopyButton
+                text={`${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/${link.shortCode}`}
+              />
             </div>
           </div>
 
-          <div className="flex items-center gap-3 flex-shrink-0"> */}
-            {/* Share button */}
-            {/* <CopyButton text={shortUrl} showLabel />
-
+          <div className="flex items-center gap-3">
+            <ActiveToggle linkId={link.id} isActive={link.isActive} />
             <span
-              className="font-semibold px-2.5 py-1"
               style={{
-                fontSize: "var(--text-xs)",
-                backgroundColor: "#052e16",
-                color: "#22c55e",
-                border: "1px solid #166534",
-                borderRadius: "var(--radius)",
+                fontSize: "var(--text-sm)",
+                color: "var(--text-subtle, #52525b)",
               }}
             >
-              Active
-            </span>
-            <span style={{ fontSize: "var(--text-sm)", color: "var(--text-subtle)" }}>
-              {formatTimeAgo(link.createdAt)}
+              Created {formatDate(link.createdAt)}
             </span>
           </div>
-        </div> */}
+        </div>
 
-        {/* Destination */}
         <div>
           <p
             className="font-semibold tracking-widest uppercase mb-1.5"
-            style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
+            style={{
+              fontSize: "var(--text-xs)",
+              color: "var(--text-subtle, #52525b)",
+            }}
           >
             Destination
           </p>
@@ -218,20 +330,16 @@ export default async function StatsPage({
             href={link.originalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 transition-colors hover:opacity-80"
-            style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}
+            className="inline-flex items-center gap-1.5 transition-colors"
+            style={{
+              fontSize: "var(--text-sm)",
+              color: "var(--text-muted)",
+            }}
           >
             <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
-            <span className="truncate max-w-xl">{link.originalUrl}</span>
+            {link.originalUrl}
           </a>
         </div>
-
-        <p
-          className="mt-3"
-          style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
-        >
-          Created {formatDate(link.createdAt)}
-        </p>
       </div>
 
       {/* Stat cards */}
@@ -240,7 +348,6 @@ export default async function StatsPage({
           label="Total clicks"
           value={formatCount(totalClicks)}
           description="all time"
-          animationDelay={0}
         />
         <StatCard
           label="Peak day"
@@ -250,56 +357,56 @@ export default async function StatsPage({
               : "—"
           }
           description={peak.count > 0 ? `${peak.count} clicks` : "no data yet"}
-          animationDelay={80}
         />
         <StatCard
           label="Avg / day"
           value={avg}
-          description="across tracked days"
-          animationDelay={160}
+          description="last 30 days"
         />
       </div>
 
-      {/* Chart card */}
-      {/* Chart card */}
-      <ChartSection chartData={chartData} />
-      {/* <div
-        className="rounded-xl p-6"
-        style={{
-          backgroundColor: "var(--surface)",
-          border: "1px solid var(--border)",
-        }}
-      >
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <p
-              className="font-semibold"
-              style={{ fontSize: "var(--text-sm)", color: "var(--text-primary)" }}
-            >
-              Clicks over time
-            </p>
-            <p
-              className="mt-0.5"
-              style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
-            >
-              Daily breakdown · all time
-            </p>
-          </div>
-          <a
-            href={shortUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 transition-colors hover:opacity-80"
-            style={{ fontSize: "var(--text-xs)", color: "var(--accent)" }}
-            title="Open short link in new tab"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-            Open link
-          </a>
-        </div>
+      {/* Chart */}
+      <div className="mb-6">
+        <ChartSection chartData={chartData} />
+      </div>
 
-        <ClicksChart data={chartData} />
-      </div> */}
+      {/* Breakdown grid */}
+      <div className="grid grid-cols-2 gap-4">
+        <BreakdownCard
+          title="Countries"
+          items={topCountries}
+          total={totalClicks}
+          emptyMessage="No country data yet — click data will appear here after visitors use your link."
+        />
+        <BreakdownCard
+          title="Region"
+          items={topCities}
+          total={totalClicks}
+          emptyMessage="No city data yet."
+        />
+        
+        <BreakdownCard
+          title="Operating systems"
+          items={topOs}
+          total={totalClicks}
+          emptyMessage="No OS data yet."
+        />
+        <BreakdownCard
+          title="Referers"
+          items={topReferers}
+          total={totalClicks}
+          emptyMessage="No referer data yet — appears when visitors click from another website."
+        />
+        <p
+          className="mt-1.5"
+          style={{
+            fontSize: "var(--text-xs)",
+            color: "var(--text-subtle, #52525b)",
+          }}
+        >
+          * Region is estimated from IP address and may not reflect exact location.
+        </p>
+      </div>
     </div>
   );
 }

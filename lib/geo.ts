@@ -16,7 +16,7 @@ export async function getGeoFromIp(ip: string): Promise<GeoData> {
   }
 
   try {
-    const res = await fetch(`http://ip-api.com/json/${ip}?fields=country,city,status`, {
+    const res = await fetch(`http://ip-api.com/json/${ip}?fields=country,regionName,status`, {
       next: { revalidate: 3600 }, // cache for 1 hour
     });
 
