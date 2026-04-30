@@ -4,34 +4,36 @@ export default function DashboardLoading() {
       {/* Header skeleton */}
       <div className="mb-6">
         <div
-          className="h-8 w-36 rounded-lg mb-2 animate-pulse"
-          style={{ backgroundColor: "var(--border)" }}
+          className="h-8 w-36 mb-2 animate-pulse"
+          style={{ backgroundColor: "var(--border)", borderRadius: "var(--radius)" }}
         />
         <div
-          className="h-4 w-64 rounded-md animate-pulse"
-          style={{ backgroundColor: "var(--border)" }}
+          className="h-4 w-64 animate-pulse"
+          style={{ backgroundColor: "var(--border)", borderRadius: "var(--radius)" }}
         />
       </div>
 
       {/* Form skeleton */}
       <div
-        className="rounded-xl p-5 mb-6 animate-pulse"
+        className="p-5 mb-6 animate-pulse"
         style={{
           backgroundColor: "var(--surface)",
           border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
           height: "80px",
         }}
       />
 
       {/* Stat cards skeleton */}
-      <div className="flex gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="flex-1 p-6 rounded-xl animate-pulse"
+            className="flex-1 p-6 animate-pulse"
             style={{
               backgroundColor: "var(--surface)",
               border: "1px solid var(--border)",
+              borderRadius: "var(--radius)",
             }}
           >
             <div
@@ -39,8 +41,8 @@ export default function DashboardLoading() {
               style={{ backgroundColor: "var(--border)" }}
             />
             <div
-              className="h-8 w-16 rounded-md mb-3"
-              style={{ backgroundColor: "var(--border)" }}
+              className="h-8 w-16 mb-3"
+              style={{ backgroundColor: "var(--border)", borderRadius: "var(--radius)" }}
             />
             <div
               className="h-2 w-24 rounded-full"
@@ -52,10 +54,11 @@ export default function DashboardLoading() {
 
       {/* Table skeleton */}
       <div
-        className="rounded-xl overflow-hidden animate-pulse"
+        className="overflow-hidden animate-pulse"
         style={{
           backgroundColor: "var(--surface)",
           border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
         }}
       >
         <div
@@ -88,18 +91,16 @@ export default function DashboardLoading() {
               style={{ backgroundColor: "var(--border)", width: "70%" }}
             />
             <div className="flex gap-1.5">
-              <div
-                className="h-6 w-6 rounded"
-                style={{ backgroundColor: "var(--border)" }}
-              />
-              <div
-                className="h-6 w-6 rounded"
-                style={{ backgroundColor: "var(--border)" }}
-              />
-              <div
-                className="h-6 w-6 rounded"
-                style={{ backgroundColor: "var(--border)" }}
-              />
+              {[0, 1, 2].map((j) => (
+                <div
+                  key={j}
+                  className="h-6 w-6"
+                  style={{
+                    backgroundColor: "var(--border)",
+                    borderRadius: "var(--radius)",
+                  }}
+                />
+              ))}
             </div>
           </div>
         ))}

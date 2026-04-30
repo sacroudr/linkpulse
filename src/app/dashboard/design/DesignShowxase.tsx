@@ -28,7 +28,7 @@ function SectionHeader({ label, snippet }: { label: string; snippet?: string }) 
         <div className="w-6 h-0.5" style={{ backgroundColor: "var(--accent)" }} />
         <span
           className="text-xs font-bold tracking-widest uppercase"
-          style={{ color: "var(--text-subtle, #52525b)" }}
+          style={{ color: "var(--text-subtle)" }}
         >
           {label} — Component
         </span>
@@ -62,7 +62,7 @@ function SubLabel({ children }: { children: React.ReactNode }) {
   return (
     <p
       className="text-xs font-semibold tracking-widest uppercase mb-3"
-      style={{ color: "var(--text-subtle, #52525b)" }}
+      style={{ color: "var(--text-subtle)" }}
     >
       {children}
     </p>
@@ -258,7 +258,7 @@ function InputShowcase() {
             <span
               className="font-mono border-r px-3 flex-shrink-0"
               style={{
-                color: "var(--text-subtle, #52525b)",
+                color: "var(--text-subtle)",
                 borderColor: "var(--border)",
                 backgroundColor: "var(--surface)",
                 padding: "var(--density-padding)",
@@ -293,7 +293,7 @@ function InputShowcase() {
         <div>
           <SubLabel>With hint</SubLabel>
           <input placeholder="Password" type="password" style={inputBase} />
-          <p className="text-xs mt-1.5" style={{ color: "var(--text-subtle, #52525b)" }}>
+          <p className="text-xs mt-1.5" style={{ color: "var(--text-subtle)" }}>
             At least 8 characters
           </p>
         </div>
@@ -517,7 +517,7 @@ function LinkTableShowcase() {
           className="grid font-semibold tracking-widest uppercase px-6 py-3"
           style={{
             fontSize: "var(--text-xs)",
-            color: "var(--text-subtle, #52525b)",
+            color: "var(--text-subtle)",
             borderBottom: "1px solid var(--border)",
             gridTemplateColumns: "180px 1fr 80px 130px 100px",
           }}
@@ -562,7 +562,7 @@ function LinkTableShowcase() {
             >
               {link.clicks}
             </span>
-            <span style={{ fontSize: "var(--text-sm)", color: "var(--text-subtle, #52525b)" }}>
+            <span style={{ fontSize: "var(--text-sm)", color: "var(--text-subtle)" }}>
               {link.date}
             </span>
             <div className="flex items-center gap-2">
@@ -570,7 +570,7 @@ function LinkTableShowcase() {
                 <button
                   key={j}
                   className="p-1.5 rounded-md cursor-pointer transition-colors"
-                  style={{ color: "var(--text-subtle, #52525b)" }}
+                  style={{ color: "var(--text-subtle)" }}
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--border)")}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
                 >
@@ -725,7 +725,7 @@ function TypographyShowcase() {
           >
             <span
               className="w-14 flex-shrink-0"
-              style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle, #52525b)" }}
+              style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
             >
               {label}
             </span>
@@ -739,7 +739,7 @@ function TypographyShowcase() {
         <div className="flex items-baseline gap-6 px-6 py-4">
           <span
             className="w-14 flex-shrink-0"
-            style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle, #52525b)" }}
+            style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
           >
             Mono
           </span>

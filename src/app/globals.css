@@ -15,6 +15,11 @@ html {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.6; transform: scale(0.75); }
@@ -28,8 +33,20 @@ html {
   animation: fade-in-up 0.3s ease-out both;
 }
 
+.animate-slide-in-right {
+  animation: slide-in-right 0.25s ease-out both;
+}
+
 .active-dot {
   animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-shake { animation: none; }
+  .animate-fade-in-up { animation: none; opacity: 1; transform: none; }
+  .animate-slide-in-right { animation: none; opacity: 1; transform: none; }
+  .active-dot { animation: none; }
+  * { transition-duration: 0.01ms !important; }
 }
 
 :root {

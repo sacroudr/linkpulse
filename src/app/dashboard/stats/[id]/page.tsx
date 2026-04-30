@@ -11,7 +11,8 @@ import { ChartSection } from "../../../../../components/links/ChartSection";
 import { BreakdownCard } from "../../../../../components/links/BreakdownCard";
 
 export const metadata: Metadata = {
-  title: "Link Stats — LinkPulse",
+  title: "Link Analytics — LinkPulse",
+  description: "View detailed click analytics and performance data for your short link.",
 };
 
 function formatCount(n: number) {
@@ -126,19 +127,20 @@ export default async function StatsPage({
 
       {/* Link info card */}
       <div
-        className="rounded-xl p-6 mb-6"
+        className="p-6 mb-6"
         style={{
           backgroundColor: "var(--surface)",
           border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
         }}
       >
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
           <div>
             <p
               className="font-semibold tracking-widest uppercase mb-2"
               style={{
                 fontSize: "var(--text-xs)",
-                color: "var(--text-subtle, #52525b)",
+                color: "var(--text-subtle)",
               }}
             >
               Short URL
@@ -164,7 +166,7 @@ export default async function StatsPage({
             <span
               style={{
                 fontSize: "var(--text-sm)",
-                color: "var(--text-subtle, #52525b)",
+                color: "var(--text-subtle)",
               }}
             >
               Created {formatDate(link.createdAt)}
@@ -177,7 +179,7 @@ export default async function StatsPage({
             className="font-semibold tracking-widest uppercase mb-1.5"
             style={{
               fontSize: "var(--text-xs)",
-              color: "var(--text-subtle, #52525b)",
+              color: "var(--text-subtle)",
             }}
           >
             Destination
@@ -199,7 +201,7 @@ export default async function StatsPage({
       </div>
 
       {/* Stat cards */}
-      <div className="flex gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <StatCard
           label="Total clicks"
           value={formatCount(totalClicks)}
@@ -227,7 +229,7 @@ export default async function StatsPage({
       </div>
 
       {/* Breakdown grid */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <BreakdownCard
           title="Countries"
           items={topCountries}
@@ -257,7 +259,7 @@ export default async function StatsPage({
           className="mt-1.5"
           style={{
             fontSize: "var(--text-xs)",
-            color: "var(--text-subtle, #52525b)",
+            color: "var(--text-subtle)",
           }}
         >
           * Region is estimated from IP address and may not reflect exact location.

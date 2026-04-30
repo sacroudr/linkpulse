@@ -83,10 +83,11 @@ export default function RegisterPage() {
       </div>
 
       <div
-        className={`w-full max-w-md rounded-2xl p-8 ${shake ? "animate-shake" : ""}`}
+        className={`w-full max-w-md p-8 ${shake ? "animate-shake" : ""}`}
         style={{
           backgroundColor: "var(--surface)",
           border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
         }}
       >
         <h1

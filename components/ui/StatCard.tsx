@@ -18,10 +18,11 @@ export function StatCard({
   if (loading) {
     return (
       <div
-        className="flex-1 rounded-xl p-6"
+        className="flex-1 p-6"
         style={{
           backgroundColor: "var(--surface)",
           border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
         }}
       >
         <div
@@ -42,17 +43,18 @@ export function StatCard({
 
   return (
     <div
-      className="flex-1 rounded-xl p-6 animate-fade-in-up"
+      className="flex-1 p-6 animate-fade-in-up"
       style={{
         backgroundColor: "var(--surface)",
         border: "1px solid var(--border)",
+        borderRadius: "var(--radius)",
         animationDelay: `${animationDelay}ms`,
         animationFillMode: "both",
       }}
     >
       <p
-        style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
         className="font-semibold tracking-widest uppercase mb-3"
+        style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
       >
         {label}
       </p>

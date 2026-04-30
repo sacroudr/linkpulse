@@ -29,15 +29,15 @@ export function ChartSection({ chartData }: ChartSectionProps) {
 
   const filteredData = filterChartData(chartData, range);
   const totalDays = chartData.length;
-
   const totalInRange = filteredData.reduce((sum, d) => sum + d.count, 0);
 
   return (
     <div
-      className="rounded-xl p-6"
+      className="p-6"
       style={{
         backgroundColor: "var(--surface)",
         border: "1px solid var(--border)",
+        borderRadius: "var(--radius)",
       }}
     >
       {/* Header */}
@@ -56,7 +56,7 @@ export function ChartSection({ chartData }: ChartSectionProps) {
             className="mt-0.5"
             style={{
               fontSize: "var(--text-xs)",
-              color: "var(--text-subtle, #52525b)",
+              color: "var(--text-subtle)",
             }}
           >
             {range === "all"
@@ -71,10 +71,8 @@ export function ChartSection({ chartData }: ChartSectionProps) {
         />
       </div>
 
-      {/* Chart */}
       <ClicksChart data={filteredData} />
 
-      {/* Empty state for filtered range */}
       {filteredData.length > 0 &&
         filteredData.every((d) => d.count === 0) && (
           <div className="flex flex-col items-center justify-center py-8">
@@ -90,7 +88,7 @@ export function ChartSection({ chartData }: ChartSectionProps) {
             <p
               style={{
                 fontSize: "var(--text-xs)",
-                color: "var(--text-subtle, #52525b)",
+                color: "var(--text-subtle)",
               }}
             >
               Try selecting a wider time range

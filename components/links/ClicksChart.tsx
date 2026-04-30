@@ -55,10 +55,11 @@ function CustomTooltip({
 
   return (
     <div
-      className="px-3 py-2 rounded-lg"
+      className="px-3 py-2"
       style={{
         backgroundColor: "var(--surface)",
         border: "1px solid var(--border)",
+        borderRadius: "var(--radius)",
         boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
       }}
     >
@@ -82,15 +83,19 @@ export function ClicksChart({ data }: ClicksChartProps) {
   if (data.length === 0) {
     return (
       <div
-        className="flex flex-col items-center justify-center h-64 rounded-xl"
+        className="flex flex-col items-center justify-center h-64"
         style={{
           backgroundColor: "var(--surface)",
           border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
         }}
       >
         <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-          style={{ backgroundColor: "var(--bg)" }}
+          className="w-12 h-12 flex items-center justify-center mb-4"
+          style={{
+            backgroundColor: "var(--bg)",
+            borderRadius: "var(--radius)",
+          }}
         >
           <TrendingUp className="w-5 h-5" style={{ color: "var(--accent)" }} />
         </div>
@@ -100,7 +105,10 @@ export function ClicksChart({ data }: ClicksChartProps) {
         >
           No clicks yet
         </p>
-        <p style={{ fontSize: "var(--text-sm)", color: "var(--text-subtle)" }}>
+        <p
+          className="text-center max-w-xs"
+          style={{ fontSize: "var(--text-sm)", color: "var(--text-subtle)" }}
+        >
           Share your short link to start seeing data here.
         </p>
       </div>
@@ -158,6 +166,9 @@ export function ClicksChart({ data }: ClicksChartProps) {
             fill="url(#clicksGradient)"
             dot={<Dot r={3} fill="var(--accent)" stroke="var(--accent)" />}
             activeDot={{ r: 5, fill: "var(--accent)", stroke: "var(--bg)" }}
+            isAnimationActive={true}
+            animationDuration={600}
+            animationEasing="ease-out"
           />
         </AreaChart>
       </ResponsiveContainer>

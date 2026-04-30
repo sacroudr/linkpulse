@@ -19,8 +19,8 @@ export default function NotFound() {
       {/* Logo */}
       <div className="flex items-center gap-2.5 mb-12">
         <div
-          className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: "var(--accent)" }}
+          className="w-9 h-9 flex items-center justify-center"
+          style={{ backgroundColor: "var(--accent)", borderRadius: "var(--radius)" }}
         >
           <Zap className="w-5 h-5 text-white fill-white" />
         </div>

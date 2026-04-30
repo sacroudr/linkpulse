@@ -9,6 +9,7 @@ import {
   Palette,
   LogOut,
   Zap,
+  X,
 } from "lucide-react";
 
 const navItems = [
@@ -35,45 +36,70 @@ const navItems = [
 interface SidebarProps {
   userEmail: string;
   userName?: string;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export function Sidebar({ userEmail, userName }: SidebarProps) {
+export function Sidebar({
+  userEmail,
+  userName,
+  isOpen = false,
+  onClose,
+}: SidebarProps) {
   const pathname = usePathname();
   const displayName = userName || userEmail.split("@")[0];
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <aside
-      className="fixed left-0 top-0 h-screen w-56 flex flex-col z-10"
+      id="sidebar-nav"
+      className={`fixed left-0 top-0 h-screen w-56 flex flex-col z-40 transition-transform duration-300 ease-in-out
+        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
       style={{
         backgroundColor: "var(--surface)",
         borderRight: "1px solid var(--border)",
       }}
+      aria-label="Main navigation"
     >
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 px-4 py-4">
-        <div
-          className="w-8 h-8 flex items-center justify-center flex-shrink-0"
+      {/* Logo row */}
+      <div className="flex items-center justify-between px-4 py-4">
+        <div className="flex items-center gap-2.5">
+          <div
+            className="w-8 h-8 flex items-center justify-center flex-shrink-0"
+            style={{
+              backgroundColor: "var(--accent)",
+              borderRadius: "var(--radius)",
+            }}
+          >
+            <Zap className="w-4 h-4 text-white fill-white" />
+          </div>
+          <span
+            className="font-semibold"
+            style={{ fontSize: "var(--text-base)", color: "var(--text-primary)" }}
+          >
+            LinkPulse
+          </span>
+        </div>
+
+        {/* Close button — mobile only */}
+        <button
+          className="lg:hidden p-1 cursor-pointer"
           style={{
-            backgroundColor: "var(--accent)",
+            color: "var(--text-muted)",
             borderRadius: "var(--radius)",
           }}
+          onClick={onClose}
+          aria-label="Close navigation menu"
         >
-          <Zap className="w-4 h-4 text-white fill-white" />
-        </div>
-        <span
-          className="text-base font-semibold"
-          style={{ color: "var(--text-primary)" }}
-        >
-          LinkPulse
-        </span>
+          <X className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Navigation */}
       <div className="px-3 mt-4 flex-1">
         <p
-          className="text-xs font-semibold tracking-widest uppercase px-2 mb-2"
-          style={{ color: "var(--text-subtle)" }}
+          className="font-semibold tracking-widest uppercase px-2 mb-2"
+          style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
         >
           Navigation
         </p>
@@ -87,13 +113,16 @@ export function Sidebar({ userEmail, userName }: SidebarProps) {
               <Link
                 key={href}
                 href={href}
-                className="flex items-center justify-between gap-2.5 px-2 py-2 rounded-lg text-sm transition-colors"
+                className="flex items-center justify-between gap-2.5 px-2 py-2 transition-colors"
                 style={{
                   backgroundColor: isActive ? "var(--bg)" : "transparent",
                   color: isActive ? "var(--text-primary)" : "var(--text-muted)",
+                  borderRadius: "var(--radius)",
+                  fontSize: "var(--text-sm)",
                 }}
                 title={tooltip}
                 aria-current={isActive ? "page" : undefined}
+                onClick={onClose}
                 onMouseEnter={(e) => {
                   if (!isActive)
                     e.currentTarget.style.backgroundColor = "var(--bg)";
@@ -130,18 +159,23 @@ export function Sidebar({ userEmail, userName }: SidebarProps) {
             className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: "var(--accent)" }}
           >
-            <span className="text-xs font-semibold text-white">{initial}</span>
+            <span
+              className="font-semibold text-white"
+              style={{ fontSize: "var(--text-xs)" }}
+            >
+              {initial}
+            </span>
           </div>
           <div className="flex flex-col min-w-0">
             <span
-              className="text-xs font-medium truncate capitalize"
-              style={{ color: "var(--text-primary)" }}
+              className="font-medium truncate capitalize"
+              style={{ fontSize: "var(--text-xs)", color: "var(--text-primary)" }}
             >
               {displayName}
             </span>
             <span
-              className="text-xs truncate"
-              style={{ color: "var(--text-subtle)" }}
+              className="truncate"
+              style={{ fontSize: "var(--text-xs)", color: "var(--text-subtle)" }}
             >
               {userEmail}
             </span>
@@ -151,8 +185,12 @@ export function Sidebar({ userEmail, userName }: SidebarProps) {
         {/* Sign out */}
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex items-center gap-2.5 px-2 py-2 rounded-lg text-sm w-full transition-colors cursor-pointer"
-          style={{ color: "var(--text-muted)" }}
+          className="flex items-center gap-2.5 px-2 py-2 w-full transition-colors cursor-pointer"
+          style={{
+            color: "var(--text-muted)",
+            borderRadius: "var(--radius)",
+            fontSize: "var(--text-sm)",
+          }}
           title="Sign out of your account"
           aria-label="Sign out"
           onMouseEnter={(e) =>

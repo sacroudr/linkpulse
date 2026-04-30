@@ -109,7 +109,7 @@ export function ThemePanel() {
 
   return (
     <aside
-      className="fixed left-56 top-0 h-screen w-60 flex flex-col overflow-y-auto z-10 theme-panel-scroll"
+      className="fixed left-0 xl:left-56 top-0 h-screen w-60 flex flex-col overflow-y-auto z-40 theme-panel-scroll"
       style={{
         backgroundColor: "var(--bg)",
         borderRight: "1px solid var(--border)",
@@ -138,8 +138,11 @@ export function ThemePanel() {
 
           <SubLabel>Mode</SubLabel>
           <div
-            className="flex rounded-lg overflow-hidden mb-4 p-0.5"
-            style={{ backgroundColor: "var(--surface)" }}
+            className="flex overflow-hidden mb-4 p-0.5"
+            style={{
+              backgroundColor: "var(--surface)",
+              borderRadius: "var(--radius)",
+            }}
           >
             {(["Dark", "Light"] as const).map((m) => {
               const isActive = mode === m.toLowerCase();
@@ -147,10 +150,12 @@ export function ThemePanel() {
                 <button
                   key={m}
                   onClick={() => setMode(m.toLowerCase() as Mode)}
-                  className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer"
+                  className="flex-1 py-1.5 font-medium transition-colors cursor-pointer"
                   style={{
+                    fontSize: "var(--text-xs)",
                     backgroundColor: isActive ? "var(--accent)" : "transparent",
                     color: isActive ? "#ffffff" : "var(--text-muted)",
+                    borderRadius: "var(--radius)",
                   }}
                 >
                   {m}
@@ -235,9 +240,10 @@ export function ThemePanel() {
                 <button
                   key={value}
                   onClick={() => setFont(value)}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer"
+                  className="w-full flex items-center justify-between px-3 py-2 transition-colors cursor-pointer"
                   style={{
                     fontFamily: stack,
+                    fontSize: "var(--text-sm)",
                     backgroundColor: isActive
                       ? "color-mix(in srgb, var(--accent) 15%, transparent)"
                       : "transparent",
@@ -245,6 +251,7 @@ export function ThemePanel() {
                     border: isActive
                       ? "1px solid color-mix(in srgb, var(--accent) 40%, transparent)"
                       : "1px solid transparent",
+                    borderRadius: "var(--radius)",
                   }}
                 >
                   <span>{value}</span>
@@ -264,7 +271,7 @@ export function ThemePanel() {
                 <button
                   key={value}
                   onClick={() => setFontSize(value)}
-                  className="flex-1 py-1.5 rounded-lg font-medium cursor-pointer transition-colors"
+                  className="flex-1 py-1.5 font-medium cursor-pointer transition-colors"
                   style={{
                     backgroundColor: isActive
                       ? "color-mix(in srgb, var(--accent) 15%, transparent)"
@@ -274,6 +281,7 @@ export function ThemePanel() {
                       ? "1px solid color-mix(in srgb, var(--accent) 40%, transparent)"
                       : "1px solid transparent",
                     fontSize: `${fontSizeMap[value]}px`,
+                    borderRadius: "var(--radius)",
                   }}
                 >
                   {label}
@@ -302,7 +310,7 @@ export function ThemePanel() {
                 <button
                   key={value}
                   onClick={() => setShape(value)}
-                  className="flex flex-col items-center gap-2 p-3 rounded-xl cursor-pointer transition-colors"
+                  className="flex flex-col items-center gap-2 p-3 cursor-pointer transition-colors"
                   style={{
                     backgroundColor: isActive
                       ? "color-mix(in srgb, var(--accent) 15%, transparent)"
@@ -310,6 +318,7 @@ export function ThemePanel() {
                     border: isActive
                       ? "1px solid color-mix(in srgb, var(--accent) 40%, transparent)"
                       : "1px solid transparent",
+                    borderRadius: "var(--radius)",
                   }}
                 >
                   <div
@@ -345,8 +354,9 @@ export function ThemePanel() {
                 <button
                   key={value}
                   onClick={() => setDensity(value)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm cursor-pointer transition-colors"
+                  className="w-full flex items-center justify-between px-3 py-2.5 cursor-pointer transition-colors"
                   style={{
+                    fontSize: "var(--text-sm)",
                     backgroundColor: isActive
                       ? "color-mix(in srgb, var(--accent) 15%, transparent)"
                       : "var(--surface)",
@@ -354,6 +364,7 @@ export function ThemePanel() {
                     border: isActive
                       ? "1px solid color-mix(in srgb, var(--accent) 40%, transparent)"
                       : "1px solid transparent",
+                    borderRadius: "var(--radius)",
                   }}
                 >
                   <span className="font-medium">{label}</span>
@@ -381,12 +392,13 @@ export function ThemePanel() {
       <div className="px-4 pb-6 pt-2">
         <button
           onClick={resetDefaults}
-          className="w-full py-2.5 rounded-lg font-medium transition-colors cursor-pointer"
+          className="w-full py-2.5 font-medium transition-colors cursor-pointer"
           style={{
             fontSize: "var(--text-sm)",
             backgroundColor: "var(--surface)",
             border: "1px solid var(--border)",
             color: "var(--text-muted)",
+            borderRadius: "var(--radius)",
           }}
           onMouseEnter={(e) =>
             (e.currentTarget.style.backgroundColor = "var(--border)")

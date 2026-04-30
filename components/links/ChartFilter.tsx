@@ -15,30 +15,43 @@ const options: { value: TimeRange; label: string; minDays: number }[] = [
   { value: "all", label: "All", minDays: 0 },
 ];
 
-export function ChartFilter({ selected, onChange, totalDays }: ChartFilterProps) {
+export function ChartFilter({
+  selected,
+  onChange,
+  totalDays,
+}: ChartFilterProps) {
   return (
     <div
-      className="flex items-center gap-0.5 p-0.5 rounded-lg"
-      style={{ backgroundColor: "var(--bg)" }}
+      className="flex items-center gap-0.5 p-0.5"
+      style={{
+        backgroundColor: "var(--bg)",
+        borderRadius: "var(--radius)",
+      }}
+      role="group"
+      aria-label="Select time range"
     >
       {options.map(({ value, label, minDays }) => {
         const isActive = selected === value;
         const isDisabled =
-          value !== "all" &&
-          value !== "7d" &&
-          totalDays < minDays;
+          value !== "all" && value !== "7d" && totalDays < minDays;
 
         return (
           <button
             key={value}
             onClick={() => !isDisabled && onChange(value)}
             disabled={isDisabled}
-            className="px-3 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            className="px-3 py-1 font-medium transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
+              fontSize: "var(--text-xs)",
               backgroundColor: isActive ? "var(--surface)" : "transparent",
               color: isActive ? "var(--text-primary)" : "var(--text-muted)",
-              border: isActive ? "1px solid var(--border)" : "1px solid transparent",
+              border: isActive
+                ? "1px solid var(--border)"
+                : "1px solid transparent",
+              borderRadius: "var(--radius)",
             }}
+            aria-pressed={isActive}
+            aria-label={`Show ${label} data`}
           >
             {label}
           </button>

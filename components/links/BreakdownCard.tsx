@@ -1,3 +1,5 @@
+import { BarChart2 } from "lucide-react";
+
 interface BreakdownItem {
   name: string;
   count: number;
@@ -18,10 +20,11 @@ export function BreakdownCard({
 }: BreakdownCardProps) {
   return (
     <div
-      className="rounded-xl p-5"
+      className="p-5"
       style={{
         backgroundColor: "var(--surface)",
         border: "1px solid var(--border)",
+        borderRadius: "var(--radius)",
       }}
     >
       <p
@@ -35,18 +38,31 @@ export function BreakdownCard({
       </p>
 
       {items.length === 0 ? (
-        <p
-          style={{
-            fontSize: "var(--text-xs)",
-            color: "var(--text-subtle, #52525b)",
-          }}
-        >
-          {emptyMessage}
-        </p>
+        <div className="flex flex-col items-center justify-center py-5 text-center">
+          <div
+            className="w-9 h-9 flex items-center justify-center mb-3"
+            style={{
+              backgroundColor: "var(--bg)",
+              borderRadius: "var(--radius)",
+            }}
+          >
+            <BarChart2 className="w-4 h-4" style={{ color: "var(--text-subtle)" }} />
+          </div>
+          <p
+            style={{
+              fontSize: "var(--text-xs)",
+              color: "var(--text-subtle)",
+              maxWidth: "180px",
+            }}
+          >
+            {emptyMessage}
+          </p>
+        </div>
       ) : (
         <div className="space-y-3">
           {items.map(({ name, count }) => {
-            const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+            const percentage =
+              total > 0 ? Math.round((count / total) * 100) : 0;
 
             return (
               <div key={name}>
@@ -74,7 +90,7 @@ export function BreakdownCard({
                       className="w-10 text-right"
                       style={{
                         fontSize: "var(--text-xs)",
-                        color: "var(--text-subtle, #52525b)",
+                        color: "var(--text-subtle)",
                       }}
                     >
                       {percentage}%
@@ -83,18 +99,20 @@ export function BreakdownCard({
                 </div>
                 {/* Progress bar */}
                 <div
-                  className="w-full rounded-full overflow-hidden"
+                  className="w-full overflow-hidden"
                   style={{
                     height: "4px",
                     backgroundColor: "var(--bg)",
+                    borderRadius: "999px",
                   }}
                 >
                   <div
-                    className="h-full rounded-full transition-all duration-500"
+                    className="h-full transition-all duration-500"
                     style={{
                       width: `${percentage}%`,
                       backgroundColor: "var(--accent)",
                       opacity: 0.7,
+                      borderRadius: "999px",
                     }}
                   />
                 </div>

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "../../../lib/auth";
-import { Sidebar } from "../../../components/ui/Sidebar";
+import { DashboardShell } from "../../../components/ui/DashboardShell";
 
 export default async function DashboardLayout({
   children,
@@ -14,12 +14,11 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "var(--bg)" }}>
-      <Sidebar
-        userEmail={session.user.email ?? ""}
-        userName={session.user.name ?? undefined}
-      />
-      <main className="ml-56 p-8">{children}</main>
-    </div>
+    <DashboardShell
+      userEmail={session.user.email ?? ""}
+      userName={session.user.name ?? undefined}
+    >
+      {children}
+    </DashboardShell>
   );
 }

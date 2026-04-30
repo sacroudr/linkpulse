@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, CheckCircle, XCircle } from "lucide-react";
+import { Zap, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CopyButton } from "./CopyButton";
 
@@ -62,10 +62,11 @@ export function CreateLinkForm() {
 
   return (
     <div
-      className="rounded-xl p-5 mb-6"
+      className="p-5 mb-6"
       style={{
         backgroundColor: "var(--surface)",
         border: "1px solid var(--border)",
+        borderRadius: "var(--radius)",
       }}
     >
       <p
@@ -125,15 +126,19 @@ export function CreateLinkForm() {
         <button
           type="submit"
           disabled={loading || urlValid === false}
-          className="flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white transition-opacity disabled:opacity-50 flex-shrink-0 cursor-pointer"
+          className="flex items-center gap-2 px-5 py-3 font-semibold text-white transition-opacity disabled:opacity-50 flex-shrink-0 cursor-pointer"
           style={{
             fontSize: "var(--text-sm)",
             backgroundColor: "var(--accent)",
             borderRadius: "var(--radius)",
           }}
         >
-          <Zap className="w-4 h-4 fill-white" />
-          {loading ? "Shortening..." : "Shorten"}
+          {loading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Zap className="w-4 h-4 fill-white" />
+          )}
+          {loading ? "Shortening…" : "Shorten"}
         </button>
       </form>
 
@@ -141,6 +146,7 @@ export function CreateLinkForm() {
         <p
           id="url-error"
           role="alert"
+          aria-live="polite"
           className="mt-2"
           style={{ fontSize: "var(--text-xs)", color: "#ef4444" }}
         >
@@ -150,7 +156,7 @@ export function CreateLinkForm() {
 
       {createdShortCode && (
         <div
-          className="flex items-center justify-between mt-3 px-3 py-2"
+          className="flex items-center justify-between mt-3 px-3 py-2 animate-fade-in-up"
           style={{
             backgroundColor: "color-mix(in srgb, #22c55e 10%, transparent)",
             border: "1px solid color-mix(in srgb, #22c55e 30%, transparent)",
@@ -158,7 +164,10 @@ export function CreateLinkForm() {
           }}
         >
           <div className="flex items-center gap-2 min-w-0">
-            <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#22c55e" }} />
+            <CheckCircle
+              className="w-3.5 h-3.5 flex-shrink-0"
+              style={{ color: "#22c55e" }}
+            />
             <span
               className="font-medium flex-shrink-0"
               style={{ fontSize: "var(--text-xs)", color: "#22c55e" }}
@@ -167,7 +176,10 @@ export function CreateLinkForm() {
             </span>
             <span
               className="font-mono truncate"
-              style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}
+              style={{
+                fontSize: "var(--text-xs)",
+                color: "var(--text-muted)",
+              }}
             >
               {appUrl}/{createdShortCode}
             </span>

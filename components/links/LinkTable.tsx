@@ -10,12 +10,14 @@ import {
   Check,
   ExternalLink,
   Download,
+  Link2,
 } from "lucide-react";
 import { exportLinksToCSV } from "../../lib/csv";
+import { useToast } from "../ui/Toast";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
-interface Link {
+interface LinkRow {
   id: string;
   shortCode: string;
   originalUrl: string;
@@ -25,7 +27,7 @@ interface Link {
 }
 
 interface LinkTableProps {
-  links: Link[];
+  links: LinkRow[];
 }
 
 function formatDate(date: Date | string) {
@@ -43,6 +45,7 @@ function formatCount(n: number) {
 
 export function LinkTable({ links }: LinkTableProps) {
   const router = useRouter();
+  const { showToast } = useToast();
   const [copied, setCopied] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
@@ -77,9 +80,10 @@ export function LinkTable({ links }: LinkTableProps) {
     try {
       await navigator.clipboard.writeText(`${APP_URL}/${shortCode}`);
       setCopied(shortCode);
+      showToast("Link copied to clipboard", "success");
       setTimeout(() => setCopied(null), 2000);
     } catch {
-      // clipboard not available
+      showToast("Could not copy to clipboard", "error");
     }
   }
 
@@ -87,7 +91,12 @@ export function LinkTable({ links }: LinkTableProps) {
     setDeleting(id);
     setConfirmDelete(null);
     try {
-      await fetch(`/api/links/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/links/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        showToast("Failed to delete link", "error");
+      }
+    } catch {
+      showToast("Network error. Please try again.", "error");
     } finally {
       setDeleting(null);
       router.refresh();
@@ -95,34 +104,38 @@ export function LinkTable({ links }: LinkTableProps) {
   }
 
   async function handleBulkDelete() {
-  const ids = Array.from(selected);
-  console.log("sending ids:", ids);
-  console.log("ids type:", typeof ids, Array.isArray(ids));
-  
-  setBulkDeleting(true);
-  setConfirmBulk(false);
-  try {
-    const res = await fetch("/api/links/bulk", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ids }),
-    });
-    
-    const data = await res.json();
-    console.log("response:", data);
-    
-    setSelected(new Set());
-  } finally {
-    setBulkDeleting(false);
-    router.refresh();
+    const ids = Array.from(selected);
+    const count = ids.length;
+    setBulkDeleting(true);
+    setConfirmBulk(false);
+    try {
+      const res = await fetch("/api/links/bulk", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+
+      if (res.ok) {
+        showToast(
+          `${count} link${count !== 1 ? "s" : ""} deleted`,
+          "success"
+        );
+        setSelected(new Set());
+      } else {
+        showToast("Failed to delete selected links", "error");
+      }
+    } catch {
+      showToast("Network error. Please try again.", "error");
+    } finally {
+      setBulkDeleting(false);
+      router.refresh();
+    }
   }
-}
 
   function handleExportCSV() {
-    const toExport =
-      someSelected
-        ? links.filter((l) => selected.has(l.id))
-        : links;
+    const toExport = someSelected
+      ? links.filter((l) => selected.has(l.id))
+      : links;
 
     exportLinksToCSV(
       toExport,
@@ -133,28 +146,40 @@ export function LinkTable({ links }: LinkTableProps) {
   if (links.length === 0) {
     return (
       <div
-        className="rounded-xl flex flex-col items-center justify-center py-20"
+        className="flex flex-col items-center justify-center py-20"
         style={{
           backgroundColor: "var(--surface)",
           border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
         }}
       >
+        <div
+          className="w-14 h-14 flex items-center justify-center mb-5"
+          style={{
+            backgroundColor: "var(--bg)",
+            borderRadius: "var(--radius)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <Link2 className="w-6 h-6" style={{ color: "var(--accent)" }} />
+        </div>
         <p
-          className="font-medium mb-1"
+          className="font-semibold mb-2"
           style={{
             color: "var(--text-primary)",
-            fontSize: "var(--text-sm)",
+            fontSize: "var(--text-base)",
           }}
         >
           No links yet
         </p>
         <p
+          className="text-center max-w-xs"
           style={{
             color: "var(--text-subtle)",
             fontSize: "var(--text-sm)",
           }}
         >
-          Shorten your first URL above to get started.
+          Shorten your first URL above to start tracking clicks and analytics.
         </p>
       </div>
     );
@@ -168,8 +193,11 @@ export function LinkTable({ links }: LinkTableProps) {
           {someSelected && (
             <>
               <span
-                className="text-xs font-medium"
-                style={{ color: "var(--text-muted)" }}
+                style={{
+                  fontSize: "var(--text-xs)",
+                  color: "var(--text-muted)",
+                }}
+                className="font-medium"
               >
                 {selected.size} selected
               </span>
@@ -177,32 +205,38 @@ export function LinkTable({ links }: LinkTableProps) {
               {confirmBulk ? (
                 <div className="flex items-center gap-1.5">
                   <span
-                    className="text-xs"
-                    style={{ color: "var(--text-muted)" }}
+                    style={{
+                      fontSize: "var(--text-xs)",
+                      color: "var(--text-muted)",
+                    }}
                   >
-                    Delete {selected.size} links?
+                    Delete {selected.size} link{selected.size !== 1 ? "s" : ""}?
                   </span>
                   <button
                     onClick={handleBulkDelete}
                     disabled={bulkDeleting}
-                    className="px-2.5 py-1 text-xs font-medium rounded-md cursor-pointer disabled:opacity-50"
+                    className="px-2.5 py-1 font-medium cursor-pointer disabled:opacity-50"
                     style={{
                       backgroundColor: "#ef4444",
                       color: "#ffffff",
+                      fontSize: "var(--text-xs)",
                       borderRadius: "var(--radius)",
                     }}
+                    aria-label={`Confirm delete ${selected.size} links`}
                   >
-                    {bulkDeleting ? "Deleting..." : "Confirm"}
+                    {bulkDeleting ? "Deleting…" : "Confirm"}
                   </button>
                   <button
                     onClick={() => setConfirmBulk(false)}
-                    className="px-2.5 py-1 text-xs font-medium rounded-md cursor-pointer"
+                    className="px-2.5 py-1 font-medium cursor-pointer"
                     style={{
                       backgroundColor: "var(--surface)",
                       border: "1px solid var(--border)",
                       color: "var(--text-muted)",
+                      fontSize: "var(--text-xs)",
                       borderRadius: "var(--radius)",
                     }}
+                    aria-label="Cancel bulk delete"
                   >
                     Cancel
                   </button>
@@ -210,13 +244,15 @@ export function LinkTable({ links }: LinkTableProps) {
               ) : (
                 <button
                   onClick={() => setConfirmBulk(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md cursor-pointer transition-colors"
+                  className="flex items-center gap-1.5 px-2.5 py-1 font-medium cursor-pointer transition-colors"
                   style={{
                     backgroundColor: "var(--surface)",
                     border: "1px solid #ef4444",
                     color: "#ef4444",
+                    fontSize: "var(--text-xs)",
                     borderRadius: "var(--radius)",
                   }}
+                  aria-label={`Delete ${selected.size} selected links`}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   Delete selected
@@ -226,14 +262,15 @@ export function LinkTable({ links }: LinkTableProps) {
           )}
         </div>
 
-        {/* Export CSV button */}
+        {/* Export CSV */}
         <button
           onClick={handleExportCSV}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md cursor-pointer transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 font-medium cursor-pointer transition-colors"
           style={{
             backgroundColor: "var(--surface)",
             border: "1px solid var(--border)",
             color: "var(--text-muted)",
+            fontSize: "var(--text-xs)",
             borderRadius: "var(--radius)",
           }}
           onMouseEnter={(e) =>
@@ -247,6 +284,11 @@ export function LinkTable({ links }: LinkTableProps) {
               ? `Export ${selected.size} selected links`
               : "Export all links"
           }
+          aria-label={
+            someSelected
+              ? `Export ${selected.size} selected links as CSV`
+              : "Export all links as CSV"
+          }
         >
           <Download className="w-3.5 h-3.5" />
           {someSelected ? `Export ${selected.size} selected` : "Export CSV"}
@@ -255,10 +297,11 @@ export function LinkTable({ links }: LinkTableProps) {
 
       {/* Table */}
       <div
-        className="rounded-xl overflow-x-auto"
+        className="overflow-x-auto"
         style={{
           backgroundColor: "var(--surface)",
           border: "1px solid var(--border)",
+          borderRadius: "var(--radius)",
         }}
       >
         {/* Header */}
@@ -272,7 +315,6 @@ export function LinkTable({ links }: LinkTableProps) {
             gridTemplateColumns: "40px 200px 1fr 100px 130px 150px",
           }}
         >
-          {/* Select all checkbox */}
           <div className="flex items-center">
             <input
               type="checkbox"
@@ -389,8 +431,11 @@ export function LinkTable({ links }: LinkTableProps) {
               <div className="flex items-center gap-1">
                 <Link
                   href={`/dashboard/stats/${link.id}`}
-                  className="p-1.5 rounded-md transition-colors cursor-pointer"
-                  style={{ color: "var(--text-subtle)" }}
+                  className="p-1.5 transition-colors cursor-pointer"
+                  style={{
+                    color: "var(--text-subtle)",
+                    borderRadius: "var(--radius)",
+                  }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.backgroundColor = "var(--border)")
                   }
@@ -405,12 +450,13 @@ export function LinkTable({ links }: LinkTableProps) {
 
                 <button
                   onClick={() => handleCopy(link.shortCode)}
-                  className="p-1.5 rounded-md transition-colors cursor-pointer"
+                  className="p-1.5 transition-colors cursor-pointer"
                   style={{
                     color:
                       copied === link.shortCode
                         ? "#22c55e"
                         : "var(--text-subtle)",
+                    borderRadius: "var(--radius)",
                   }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.backgroundColor = "var(--border)")
@@ -440,8 +486,9 @@ export function LinkTable({ links }: LinkTableProps) {
                         backgroundColor: "#ef4444",
                         color: "#ffffff",
                         fontSize: "var(--text-xs)",
-                        borderRadius: "4px",
+                        borderRadius: "var(--radius)",
                       }}
+                      aria-label={`Confirm delete /${link.shortCode}`}
                     >
                       {deleting === link.id ? "…" : "Yes"}
                     </button>
@@ -453,8 +500,9 @@ export function LinkTable({ links }: LinkTableProps) {
                         color: "var(--text-muted)",
                         border: "1px solid var(--border)",
                         fontSize: "var(--text-xs)",
-                        borderRadius: "4px",
+                        borderRadius: "var(--radius)",
                       }}
+                      aria-label="Cancel delete"
                     >
                       No
                     </button>
@@ -462,8 +510,11 @@ export function LinkTable({ links }: LinkTableProps) {
                 ) : (
                   <button
                     onClick={() => setConfirmDelete(link.id)}
-                    className="p-1.5 rounded-md transition-colors cursor-pointer"
-                    style={{ color: "var(--text-subtle)" }}
+                    className="p-1.5 transition-colors cursor-pointer"
+                    style={{
+                      color: "var(--text-subtle)",
+                      borderRadius: "var(--radius)",
+                    }}
                     onMouseEnter={(e) =>
                       (e.currentTarget.style.color = "#ef4444")
                     }
