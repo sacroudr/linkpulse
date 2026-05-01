@@ -25,7 +25,7 @@ export async function getGeoFromIp(ip: string): Promise<GeoData> {
 
     // Fields must include "city" (not "regionName") to populate the city column.
     const res = await fetch(
-      `http://ip-api.com/json/${ip}?fields=country,city,status`,
+      `http://ip-api.com/json/${ip}?fields=country,regionName,status`,
       {
         signal: controller.signal,
         next: { revalidate: 3600 },

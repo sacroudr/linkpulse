@@ -3,6 +3,7 @@ import { Inter, DM_Sans, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/goog
 import "./globals.css";
 import { ThemeProvider } from "../../lib/theme";
 import { ToastProvider } from "../../components/ui/Toast";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
@@ -53,6 +54,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ToastProvider>{children}</ToastProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
